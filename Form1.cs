@@ -20,11 +20,13 @@ namespace PDI
     public partial class Form1 : Form
     {
         Img imagen = new Img();
-
+        Emgu.CV.VideoWriter w;
         public Form1()
         {
             InitializeComponent();
 
+           // Emgu.CV.gpu
+         
             GetFiles();
 
         }
@@ -76,8 +78,8 @@ namespace PDI
             lastBitMap = imagen.Thres[val].Bitmap;
 
             segmentBox.Image = lastBitMap;
-         
 
+            //w.Write(imagen.Thres[val].Mat);
 
             //   pictureBox1.Image = redImg.ToBitmap();
         }
@@ -198,9 +200,18 @@ namespace PDI
             ImgDB.FilesRow first = (ImgDB.FilesRow)drv.Row;
             string filename = first.Path + first.Filename;
 
+           
+
             originalBox.Image = imagen.GetBitMap(filename, 5);
             imagen.GetBasicInfo();
             basicInfoBindingSource.DataSource = imagen.BInfo.table;
+
+         //   if (w != null) w.Dispose();
+           // int Codec = Emgu.Util.C('D', 'I', 'V', '3');
+          
+          //  w = new VideoWriter(filename + ".mp4",-1, 5, new Size(200,200), true);
+           
+
 
             getRGB_Click(sender, e);
             threshold_Click(sender, e);
@@ -280,7 +291,8 @@ namespace PDI
         private void iterateBtn_Click(object sender, EventArgs e)
         {
 
-           
+            factor = 0.6;
+            factorDiago = 0.90;
 
 
             lastBitMap = imagen.escaledUI.CopyBlank().Bitmap;
@@ -299,11 +311,26 @@ namespace PDI
             numericUpDown1.Value = 2;
             ExtractLines(sender, e);
 
+          //  w.Dispose();
+            ///////////////////////////
+         
+            //////////////////////////
+
+            imagen.detect.lines =  imagen.detect.GetAvgRGBLines(true);
+           
+            imagen.detect.DrawLines(new Rgb(Color.White), false);
+
+            Image<Rgb, byte> result = imagen.detect.figure[2].Clone();
+
+
+            this.rgbBox.Image = result.Bitmap;
+
+
             MessageBox.Show("0");
 
             factor = 0.1;
 
-            Image<Rgb, byte> result = null;
+           
 
             numericUpDown1.Value = 0;
 
@@ -319,6 +346,12 @@ namespace PDI
             numericUpDown1.Value = 2;
             ExtractLines(sender, e);
 
+            imagen.detect.lines = imagen.detect.GetAvgRGBLines(true);
+
+            imagen.detect.DrawLines(new Rgb(Color.Green), false);
+
+            result = imagen.detect.figure[2].Add(result).Clone();
+            this.rgbBox.Image = result.Bitmap;
 
             /*
             // MessageBox.Show(arrRed.Count() + "," + arrGreen.Count() + "," + arrBlue.Count());
@@ -401,15 +434,15 @@ namespace PDI
             Image<Rgb, byte> result = new Image<Rgb, Byte>(lastBitMap);
 
 
-            int val = Convert.ToInt16(numericUpDown1.Value);
+            int channel = Convert.ToInt16(numericUpDown1.Value);
             IterateAChannel(sender, e);
-            LineSegment2D[] arrRed = imagen.detect.ExtractAvgLines(factor, val);
-            result = imagen.detect.DrawLines(val, ref arrRed).Add(result).Clone();
+            LineSegment2D[] arrRed = imagen.detect.ExtractAvgLines(factor, channel);
+            result = imagen.detect.DrawLines(channel, ref arrRed).Add(result).Clone();
             segmentBox.Image = result.Bitmap;
 
             LineSegment2D[] diag;
-            diag = imagen.detect.ExtractAvgDiagonalLines(factorDiago, val);
-            result = imagen.detect.DrawLines(val, ref diag).Add(result).Clone();
+            diag = imagen.detect.ExtractAvgDiagonalLines(factorDiago, channel);
+            result = imagen.detect.DrawLines(channel, ref diag).Add(result).Clone();
             lastBitMap = result.Bitmap;
             segmentBox.Image = result.Bitmap;
         }

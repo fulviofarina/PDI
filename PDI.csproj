@@ -62,6 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Detector.Lines.cs" />
+    <Compile Include="Detector.Selectors.cs" />
+    <Compile Include="Detector.Draw.cs" />
+    <Compile Include="Detector.Fields.cs" />
     <Compile Include="Directory.cs" />
     <Compile Include="DrawMatches.cs" />
     <Compile Include="Detector.cs" />
