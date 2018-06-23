@@ -108,7 +108,26 @@ namespace PDI
 
     public partial class Detector
     {
-        public  LineSegment2D[] GetAvgDiagonalsPosNeg(bool extendedLenght = false)
+        public void PickColorsAvg(int type, ref Rgb[] color)
+        {
+            color[0] = new Rgb(Color.Green);
+            color[1] = new Rgb(Color.Red);
+            color[2] = new Rgb(Color.Magenta);
+
+            if (type == 0)
+            {
+                //ok, previous by default at 0
+            }
+            else if (type == 1)
+            {
+                color[0] = new Rgb(Color.Yellow);
+                color[1] = new Rgb(Color.Blue);
+                color[2] = new Rgb(Color.Cyan);
+            }
+        }
+
+
+        public LineSegment2D[] GetAvgDiagonalsPosNeg(bool extendedLenght = false)
         {
             List<LineSegment2D> ls = new List<LineSegment2D>();
 

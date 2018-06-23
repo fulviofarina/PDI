@@ -19,7 +19,7 @@ using Emgu.Util;
 
 namespace PDI
 {
-    public partial class Form1
+    public partial class Form1 : Form
     {
 
         private static void WrongHough(Image<Bgr, byte> redImg2)

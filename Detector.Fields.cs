@@ -60,7 +60,22 @@ namespace PDI
 
         public Image<Rgb, byte> raw = null;
 
-       
+        private LineSegment2D refPos;
+
+        public LineSegment2D RefPos
+        {
+            get => refPos = new  LineSegment2D(new Point(0, 0), new Point(raw.Width, raw.Height));
+
+            set => refPos = value;
+        }
+        private LineSegment2D refNeg;
+
+        public LineSegment2D RefNeg
+        {
+            get => refNeg = new LineSegment2D(new Point(raw.Width, 0), new Point(0, raw.Height));
+
+            set => refNeg = value;
+        }
         public Detector()
         {
             Initialize();
