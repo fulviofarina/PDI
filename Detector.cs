@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Emgu;
-using Emgu.CV;
+﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
-using Emgu.Util;
-using System.Collections;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
 
 namespace PDI
 {
-    
+
 
     public partial class Detector
     {
@@ -231,6 +223,16 @@ namespace PDI
 
             //  MessageBox.Show(hs.Count().ToString());
             return imageOutP.ToImage<Rgba, Byte>();
+        }
+
+        public LineSegment2D[] SelectMany(int channel, ref List<LineSegment2D[]> ls)
+        {
+            fullLines[channel] = ls.SelectMany(o => o.ToList())
+                .Where(s_isValid())
+                .OrderBy(o => o.Length)
+                .ToArray();
+
+            return fullLines[channel];
         }
     }
 

@@ -22,8 +22,9 @@ namespace PDI
 
     public partial class Detector
     {
+        //SELECTORS
 
-        private Func<LineSegment2D, bool> lineDirSelector(float dirx, float diry, int type)
+        private Func<LineSegment2D, bool> s_lineDir(float dirx, float diry, int type)
         {
             Func<LineSegment2D, bool> func;
 
@@ -52,40 +53,50 @@ namespace PDI
         }
 
 
-        private Func<LineSegment2D, bool> quadrantSelector(int type, int widthHeight)
+        private Func<LineSegment2D, bool> s_quadrant(int quadrant, int widthHeight, double percent1 = 0.25)
         {
             Func<LineSegment2D, bool> func;
-            int halfwidth = widthHeight / 2;
+
+          
+            double percent2 = 1- percent1;
+            int factor1 = Convert.ToInt32(widthHeight * percent1);
+            int factor2 = Convert.ToInt32(widthHeight * percent2);
             func = o =>
             {
-                return (o.P1.Y > halfwidth && o.P2.Y > halfwidth);
+              
+                return (o.P1.Y > factor2 && o.P2.Y > factor2);
             };
 
-            if (type == 1)
+            if (quadrant == 0)
             {
                 func = o =>
                 {
-                    return (o.P1.Y < halfwidth && o.P2.Y < halfwidth);
+                 
+                    return (o.P1.Y < factor1 && o.P2.Y < factor1);
                 };
             }
-            else if (type == 2)
+            else if (quadrant == 3)
             {
                 func = o =>
                 {
-                    return (o.P1.X > halfwidth && o.P2.X > halfwidth);
+               
+
+                    return (o.P1.X > factor2 && o.P2.X > factor2);
                 };
             }
-            else if (type == 3)
+            else if (quadrant == 2)
             {
                 func = o =>
                 {
-                    return (o.P1.X < halfwidth && o.P2.X < halfwidth);
+                 
+
+                    return (o.P1.X < factor1 && o.P2.X < factor1);
                 };
             }
 
             return func;
         }
-        private Func<LineSegment2D, bool> notANumber()
+        private Func<LineSegment2D, bool> s_isValid()
         {
             Func<LineSegment2D, bool> g = o =>
             {

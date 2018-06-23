@@ -115,11 +115,17 @@ namespace PDI
            
             for (int i = 0; i < 4; i++)
             {
-                Rgba r = PureColor(i,d);
-                Rgba g = PureColor(i,max);
-                Thres[i] = RGB[i].ThresholdBinary(r, g);
+                Threshold(d, max, i);
             }
         }
+
+        public void Threshold(double d, double max, int channel)
+        {
+            Rgba r = PureColor(channel, d);
+            Rgba g = PureColor(channel, max);
+            Thres[channel] = RGB[channel].ThresholdBinary(r, g);
+        }
+
         public void Divide()
         {
             for (int i = 0; i < 3; i++)

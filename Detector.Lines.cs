@@ -18,134 +18,31 @@ using System.Collections;
 
 namespace PDI
 {
-    
-
     public partial class Detector
     {
-       
-      
-
-        public LineSegment2D[] GetAvgRGBLines(bool extendeLenght = false)
+        public LineSegment2D LineResizeX(ref LineSegment2D s)
         {
-           
-            List<LineSegment2D> ls = new List<LineSegment2D>();
-          
-            LineSegment2D s;
-           
-            avgUDLRLines_H = GetAvgUDLRAllChannels(ref UDLRLines_H);
-
-            for (int i = 0; i < 4; i++)
-            {
-                if (extendeLenght)
-                {
-                    s= avgUDLRLines_H[i];
-                    Point p1 = new Point(0, s.P1.Y);
-                    Point p2 = new Point(raw.Width, s.P2.Y);
-                    LineSegment2D neo = new LineSegment2D(p1,p2);
-                    avgUDLRLines_H[i] = neo;
-                }
-            }
-
-            avgUDLRLines_V = GetAvgUDLRAllChannels(ref UDLRLines_V);
-            for (int i = 0; i < 4; i++)
-            {
-                if (extendeLenght)
-                {
-                    s = avgUDLRLines_V[i];
-                    Point p1 = new Point(s.P1.X, 0);
-                    Point p2 = new Point(s.P2.X, raw.Height);
-                    LineSegment2D neo = new LineSegment2D(p1, p2);
-                    avgUDLRLines_V[i] = neo;
-                }
-            }
-
-          
-            avgUDLRLines = GetAvgUDLRAllChannels(ref UDLRLines);
-
-            ls.AddRange(avgUDLRLines_H);
-            ls.AddRange(avgUDLRLines_V);
-            ls.AddRange(avgUDLRLines);
-            //////////////
-            LineSegment2D[] input = null;
-            input = DiagonalPos;
-            avgDiagonalPos = GetAvgLine(ref input);
-            ls.Add(avgDiagonalPos);
-            ///////////
-            input = DiagonalNeg;
-            avgDiagonalNeg = GetAvgLine(ref input);
-            ls.Add(avgDiagonalNeg);
-
-            return ls.ToArray();
+            Point p1 = new Point(s.P1.X, 0);
+            Point p2 = new Point(s.P2.X, raw.Height);
+            LineSegment2D neo = new LineSegment2D(p1, p2);
+            return neo;
         }
 
-        private LineSegment2D[] GetAvgUDLRAllChannels(ref LineSegment2D[,] aux)
+        public LineSegment2D LineResizeY(ref LineSegment2D s)
         {
-            List<LineSegment2D> ls = new List<LineSegment2D>();
-            List<LineSegment2D> ls2 = new List<LineSegment2D>();
-          
-            for (int i = 0; i < 4; i++)
-            {
-                ls2.Clear();
-                LineSegment2D s;
-                for (int channel = 0; channel < 3; channel++)
-                {
-                    s = aux[channel, i];
-                  
-                    ls2.Add(s);
-                }
-                LineSegment2D[]  input = ls2.ToArray(); //horizontales
-                s = GetAvgLine(ref input);
-                ls.Add(s);
-            }
-            return ls.ToArray();
+            Point p1 = new Point(0, s.P1.Y);
+            Point p2 = new Point(raw.Width, s.P2.Y);
+            LineSegment2D neo = new LineSegment2D(p1, p2);
+            return neo;
         }
 
-        public LineSegment2D[] ExtractAvgLines(double factor, int channel, bool onlyStraight = true)
-        {
-            List<LineSegment2D> ls = new List<LineSegment2D>();
-         //i iterador es el segmento arriba abajo iz derecha
-            for (int i = 0; i < 4; i++)
-            {
-                LineSegment2D[] ul = GetUDLRLines(channel, raw.Height, factor, i, onlyStraight);
-                LineSegment2D[] horiz = ul.Where(lineDirSelector(1, 0, 0)).ToArray();
-                LineSegment2D[] verti = ul.Where(lineDirSelector(0, 1, 0)).ToArray();
-                ul = ul.Except(horiz).ToArray();
-                ul = ul.Except(verti).ToArray();
-
-                LineSegment2D dh = HistoLine(ref horiz);
-                UDLRLines_H[channel,i] = (LineSegment2D)dh;
-                LineSegment2D dv = HistoLine(ref verti);
-                UDLRLines_V[channel,i] = (LineSegment2D)dv;
-                LineSegment2D d = HistoLine(ref ul); //the rest
-                UDLRLines[channel,i] = (LineSegment2D)d;
-                ls.Add((LineSegment2D)dh);
-                ls.Add((LineSegment2D)dv);
-                ls.Add((LineSegment2D)d);
-
-            }
-            
-            return ls.ToArray();
-        }
-        public LineSegment2D[] ExtractAvgDiagonalLines(double factor, int channels)
-        {
-            LineSegment2D[] diag = GetDiagonals(channels, raw.Height, factor);
-
-            LineSegment2D[] da = diag.Where(o => o.Direction.Y / o.Direction.X > 0).ToArray();
-            LineSegment2D d1 = HistoLine(ref  da );
-            DiagonalPos[channels] = (LineSegment2D)d1;
-
-            LineSegment2D[] db = diag.Where(o => o.Direction.Y / o.Direction.X < 0).ToArray();
-            LineSegment2D d2 = HistoLine(ref db);
-            DiagonalNeg[channels] = (LineSegment2D)d2;
-            LineSegment2D[] newArr = new LineSegment2D[] { (LineSegment2D)d1, (LineSegment2D)d2 };
-            return newArr;
-        }
         public LineSegment2D GetAvgLine(ref LineSegment2D[] arrRed)
         {
-            if (arrRed!=null && arrRed.Count() == 0) return new LineSegment2D();
+            arrRed = arrRed.Where(s_isValid()).ToArray();
+            if (arrRed != null && arrRed.Count() == 0) return new LineSegment2D();
 
-            arrRed = arrRed.Where(notANumber()).ToArray();
-           
+
+
             double avgp1x = arrRed.Average(o => o.P1.X);
             double avgp2x = arrRed.Average(o => o.P2.X);
             double avgp1y = arrRed.Average(o => o.P1.Y);
@@ -163,33 +60,33 @@ namespace PDI
             {
                 return new LineSegment2D();
             }
-                arrRed = arrRed.OrderBy(o => o.P1.X).ToArray();
-                HashSet<int> p1x = new HashSet<int>();
-                Hashtable ls =  new Hashtable();
-                
-                foreach (LineSegment2D s in arrRed)
-                {
-                    if (p1x.Add(s.P1.X))
-                    {
-                        int count = arrRed.Where(o => o.P1.X == s.P1.X).Count();
-                     //   count--;
-                        if (count > 0)
-                        {
-                            ls.Add(s, count );
-                        }
-                    }
+            arrRed = arrRed.OrderBy(o => o.P1.X).ToArray();
+            HashSet<int> p1x = new HashSet<int>();
+            Hashtable ls = new Hashtable();
 
+            foreach (LineSegment2D s in arrRed)
+            {
+                if (p1x.Add(s.P1.X))
+                {
+                    int count = arrRed.Where(o => o.P1.X == s.P1.X).Count();
+                    //   count--;
+                    if (count > 0)
+                    {
+                        ls.Add(s, count);
+                    }
                 }
+
+            }
             p1x.Clear();
             foreach (LineSegment2D s in arrRed)
             {
                 if (p1x.Add(s.P1.Y))
                 {
                     int count = arrRed.Where(o => o.P1.Y == s.P1.Y).Count();
-                    
+
                     if (count > 0)
                     {
-                        if (ls.ContainsKey(s)) ls[s] = (int)ls[s]+ count;
+                        if (ls.ContainsKey(s)) ls[s] = (int)ls[s] + count;
                         else ls.Add(s, count);
                     }
                 }
@@ -197,17 +94,188 @@ namespace PDI
             }
             if (ls.Count == 0) return new LineSegment2D();
             double N = ls.Values.Cast<int>().Sum();
-            double avgp1x = ls.Keys.Cast<LineSegment2D>().Sum(o => (int)ls[o] * o.P1.X)/N;
+            double avgp1x = ls.Keys.Cast<LineSegment2D>().Sum(o => (int)ls[o] * o.P1.X) / N;
             double avgp2x = ls.Keys.Cast<LineSegment2D>().Sum(o => (int)ls[o] * o.P2.X) / N;
             double avgp1y = ls.Keys.Cast<LineSegment2D>().Sum(o => (int)ls[o] * o.P1.Y) / N;
             double avgp2y = ls.Keys.Cast<LineSegment2D>().Sum(o => (int)ls[o] * o.P2.Y) / N;
             Point p1 = new Point(Convert.ToInt32(avgp1x), Convert.ToInt32(avgp1y));
             Point p2 = new Point(Convert.ToInt32(avgp2x), Convert.ToInt32(avgp2y));
-            return new LineSegment2D(p1,p2);
+            return new LineSegment2D(p1, p2);
 
         }
 
-      
+    }
+
+    public partial class Detector
+    {
+        public  LineSegment2D[] GetAvgDiagonalsPosNeg(bool extendedLenght = false)
+        {
+            List<LineSegment2D> ls = new List<LineSegment2D>();
+
+            //////////////
+            LineSegment2D[] input = null;
+            input = avgDiagonalPosCh;
+            avgDiagonalPos = GetAvgLine(ref input);
+
+            ///////////
+            input = avgDiagonalNegCh;
+            avgDiagonalNeg = GetAvgLine(ref input);
+
+            ls.Add(avgDiagonalPos);
+            ls.Add(avgDiagonalNeg);
+
+            return ls.ToArray();
+        }
+        public LineSegment2D[] GetAvgDiagonalsPosNegPerChannel(int channels)
+        {
+            LineSegment2D d1 = HistoLine(ref Diagonals[channels, 0]);
+            avgDiagonalPosCh[channels] = (LineSegment2D)d1;
+            LineSegment2D d2 = HistoLine(ref Diagonals[channels, 1]);
+            avgDiagonalNegCh[channels] = (LineSegment2D)d2;
+
+            LineSegment2D[] newArr = new LineSegment2D[] { (LineSegment2D)d1, (LineSegment2D)d2 };
+            return newArr;
+        }
+
+        public void GetDiagonalsPosNegPerChannel(double factor, int channels)
+        {
+            LineSegment2D[] diag = GetDiagonals(channels, raw.Height, factor);
+
+            Diagonals[channels, 0] = diag.Where(o => o.Direction.Y / o.Direction.X > 0).ToArray();
+            Diagonals[channels, 1] = diag.Where(o => o.Direction.Y / o.Direction.X < 0).ToArray();
+        }
+
+
+    }
+
+    public partial class Detector
+    {
+
+
+        public LineSegment2D[] GetAvgUDLR(bool extendeLenght = false)
+        {
+
+            List<LineSegment2D> ls = new List<LineSegment2D>();
+
+            LineSegment2D s;
+
+            avgUDLRLines_H = getAvgUDLR(ref UDLRLines_H);
+
+
+            LineSegment2D[] aux = avgUDLRLines_H;
+            if (extendeLenght)
+            {
+                for (int q = 0; q < 4; q++)
+                {
+
+                    s = aux[q];
+                    LineSegment2D neo = LineResizeY(ref s);
+                    aux[q] = neo;
+
+                }
+            }
+
+            avgUDLRLines_V = getAvgUDLR(ref UDLRLines_V);
+
+            aux = avgUDLRLines_V;
+            if (extendeLenght)
+            {
+                for (int q = 0; q < 4; q++)
+                {
+
+                    s = aux[q];
+                    LineSegment2D neo = LineResizeX(ref s);
+                    aux[q] = neo;
+
+                }
+            }
+
+            avgUDLRLines = getAvgUDLR(ref UDLRLines);
+
+            ls.AddRange(avgUDLRLines_H);
+            ls.AddRange(avgUDLRLines_V);
+            ls.AddRange(avgUDLRLines);
+
+            //GetAvgDiagonals();
+
+            return ls.ToArray();
+        }
+
+        private LineSegment2D[] getAvgUDLR(ref LineSegment2D[,] aux)
+        {
+            List<LineSegment2D> ls = new List<LineSegment2D>();
+            List<LineSegment2D> ls2 = new List<LineSegment2D>();
+
+            for (int udlr = 0; udlr < 4; udlr++)
+            {
+                ls2.Clear();
+                LineSegment2D s;
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    s = aux[channel, udlr];
+
+                    ls2.Add(s);
+                }
+                LineSegment2D[] input = ls2.ToArray(); //horizontales
+                s = GetAvgLine(ref input);
+                ls.Add(s);
+            }
+            return ls.ToArray();
+        }
+
+
+        public LineSegment2D[][,] GetAvgUDLR_HVOPerChannel(int channel)
+        {
+
+            getAvgUDLR_HVOPerChannel(channel, ref UDLRLines_H, chUDLR_HVO, 0); //horizontals 0
+            getAvgUDLR_HVOPerChannel(channel, ref UDLRLines_V, chUDLR_HVO, 1); //veticals 1
+            getAvgUDLR_HVOPerChannel(channel, ref UDLRLines, chUDLR_HVO, 2); //others
+
+            LineSegment2D[][,] ls = { UDLRLines_H, UDLRLines_V, UDLRLines };
+
+
+            return ls;
+        }
+
+        public void getAvgUDLR_HVOPerChannel(int channel, ref LineSegment2D[,] destiny, LineSegment2D[,,][] arry, int type)
+        {
+
+            for (int i = 0; i < 4; i++)
+            {
+
+                LineSegment2D[] horiz = arry[channel, i, type];
+                LineSegment2D dh = HistoLine(ref horiz);
+                destiny[channel, i] = (LineSegment2D)dh;
+            }
+        }
+
+    }
+    public partial class Detector
+    {
+        public LineSegment2D[,,][] GetUDLR_HVOPerChannel(double factor, int channel, double percentFrame = 0.25, bool onlyStraight = true)
+        {
+            List<LineSegment2D> ls = new List<LineSegment2D>();
+
+            //i iterador es el segmento arriba abajo iz derecha
+            for (int i = 0; i < 4; i++)
+            {
+                LineSegment2D[] ul = getUDLRLines(channel, raw.Height, factor, i, percentFrame, onlyStraight);
+                LineSegment2D[] horiz = ul.Where(s_lineDir(1, 0, 0)).ToArray();
+                LineSegment2D[] verti = ul.Where(s_lineDir(0, 1, 0)).ToArray();
+                ul = ul.Except(horiz).ToArray();
+                ul = ul.Except(verti).ToArray();
+
+                chUDLR_HVO[channel, i, 0] = horiz;
+                chUDLR_HVO[channel, i, 1] = verti;
+                chUDLR_HVO[channel, i, 2] = ul;
+
+            }
+
+            return chUDLR_HVO;
+        }
+
+
+
 
         /// <summary>
         /// Perpendiculares y paralelas
@@ -218,28 +286,36 @@ namespace PDI
         /// <param name="UDLR"></param>
         /// <param name="onlyStraight"></param>
         /// <returns></returns>
-        public LineSegment2D[] GetUDLRLines(int channel, int heightOrWidth, double sizeFactor, int UDLR, bool onlyStraight = true)
+        public LineSegment2D[] getUDLRLines(int channel, int heightOrWidth, double sizeFactor, int UDLR, double percentFrame = 0.25, bool onlyStraight = true)
         {
-            
+
             LineSegment2D[] arrGreen = GetLines(channel, heightOrWidth, sizeFactor, onlyStraight)
-                .Where(quadrantSelector(UDLR, heightOrWidth))
+                .Where(s_quadrant(UDLR, heightOrWidth, percentFrame))
                 .ToArray();
             return arrGreen;
         }
-       
+
+
+    }
+
+    public partial class Detector
+    {
         public LineSegment2D[] GetDiagonals(int channel, int heightOrWidth, double sizeFactor, float fracX = 1.02f, float fracY = 0.98f)
         {
 
             LineSegment2D[] arrGreen = GetLines(channel, heightOrWidth, sizeFactor, false)
-                .Where(lineDirSelector(0,0,2)).ToArray();
+                  .Where(s_isValid())
+                .Where(s_lineDir(0,0,2))
+                .ToArray();
             arrGreen = arrGreen
-                .Where(lineDirSelector(fracX, fracY, 1)).ToArray();
+                .Where(s_lineDir(fracX, fracY, 1)).ToArray();
             return arrGreen;
         }
+
         public IEnumerable<LineSegment2D> GetLinesByDirection(int channel, float dirx, float diry)
         {
             IEnumerable<LineSegment2D> enumerable = fullLines[channel];
-            return enumerable.Where(lineDirSelector(dirx, diry, 0));
+            return enumerable.Where(s_lineDir(dirx, diry, 0));
 
         }
 
@@ -253,7 +329,6 @@ namespace PDI
             return arr
                 .Where(o => o.Length >= width * sizeFactor).OrderBy(o=> o.Length).ToArray();
         }
-
       
         
     }

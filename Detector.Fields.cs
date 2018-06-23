@@ -23,19 +23,29 @@ namespace PDI
     public partial class Detector
     {
       
-
+        //per channel per section/quadrant
         public LineSegment2D[,] UDLRLines;
         public LineSegment2D[,] UDLRLines_H;
         public LineSegment2D[,] UDLRLines_V;
-        public LineSegment2D[] DiagonalPos;
-        public LineSegment2D[] DiagonalNeg;
+
+        //per channel, positive or negative, arrays
+        public LineSegment2D[,][] Diagonals;
+        //per channel
+        public LineSegment2D[] avgDiagonalPosCh;
+        public LineSegment2D[] avgDiagonalNegCh;
+
+        //avg all channels
         public LineSegment2D avgDiagonalNeg;
         public LineSegment2D avgDiagonalPos;
+      
+        //avg all channels given per section/quadrant
         public LineSegment2D[] avgUDLRLines_H;
         public LineSegment2D[] avgUDLRLines_V;
         public LineSegment2D[] avgUDLRLines;
+        //channel, sectionquadrant, type(hori, verti, others)
+        public LineSegment2D[,,][] chUDLR_HVO;
 
-       
+
 
         public StringBuilder msgBuilder;
         public CircleF[] circles;
@@ -53,16 +63,23 @@ namespace PDI
        
         public Detector()
         {
+            Initialize();
+
+        }
+
+        private void Initialize()
+        {
             figure = new Image<Rgb, byte>[4];
             msgBuilder = new StringBuilder("Performance: ");
             fullLines = new LineSegment2D[4][];
-            UDLRLines = new LineSegment2D[3,4];
-            UDLRLines_H = new LineSegment2D[3,4];
-            UDLRLines_V = new LineSegment2D[3,4];
-            DiagonalNeg = new LineSegment2D[3];
-            DiagonalPos = new LineSegment2D[3];
+            UDLRLines = new LineSegment2D[3, 4];
+            UDLRLines_H = new LineSegment2D[3, 4];
+            UDLRLines_V = new LineSegment2D[3, 4];
+            avgDiagonalNegCh = new LineSegment2D[3];
+            avgDiagonalPosCh = new LineSegment2D[3];
+            Diagonals = new LineSegment2D[4, 2][];
+            chUDLR_HVO = new LineSegment2D[3, 4, 3][];
         }
-       
     }
 
    

@@ -54,14 +54,16 @@ namespace PDI
         }
 
       
-        public void DrawLines(Rgb color, bool append = false)
+        public Image<Rgb, byte> DrawLines(Rgb color, bool append = false)
         {
             if (!append) figure[2] = raw.CopyBlank();
-            lines = lines.Where(notANumber()).ToArray();
+            lines = lines.Where(s_isValid()).ToArray();
             foreach (LineSegment2D line in lines)
             {
                 figure[2].Draw(line,color, 1);
             }
+
+            return figure[2];
         }
 
        
