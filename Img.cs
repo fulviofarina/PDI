@@ -66,6 +66,57 @@ namespace PDI
             if (draw) DrawDetected(what);
         }
 
+        public void DivideRoutine(int detectType, int step, double percent, double max, double valor, int channel, ref Image<Rgb, byte> result, double factor)
+        {
+            List<LineSegment2D[]> ls = new List<LineSegment2D[]>();
+
+            for (double val = valor; val <= max; val += step)
+            {
+                Threshold(val, max, channel);
+                ElementSubstraction(channel);
+                Divide(channel);
+
+                args[7] = val; //actualiza threshold
+
+                result = Divs[channel].Convert<Rgb, byte>();
+
+                BeginDetection(ref result, detectType);
+                ls.Add(detect.lines);
+
+            }
+
+            //faltaba esto
+            detect.SelectMany(channel, ref ls);
+            detect.GetUDLR_HVOPerChannel(factor, channel, percent, true);
+            detect.GetAvgUDLR_HVOPerChannel(channel);
+            ls.Clear();
+            ls = null;
+        }
+
+
+        public void ElementSubsroutine(int detectType, int step, double max, double valor, int channel, ref Image<Rgb, byte> result, double factorDiago)
+        {
+           
+            List<LineSegment2D[]> ls = new List<LineSegment2D[]>();
+            for (double val = valor; val <= max; val += step)
+            {
+                Threshold(val, max, channel);
+                ElementSubstraction(channel);
+                //   imagen.Divide(channel);
+                args[7] = 220; //actualiza threshold
+                result = ElementSubs[channel].Convert<Rgb, byte>();
+
+                BeginDetection(ref result, detectType);
+                ls.Add(detect.lines);
+
+            }
+            ///  MessageBox.Show("Last Subs");
+            detect.SelectMany(channel, ref ls);
+            detect.GetDiagonalsPosNegPerChannel(factorDiago, channel);
+            detect.GetAvgDiagonalsPosNegPerChannel(channel);
+            ls.Clear();
+            ls = null;
+        }
         public void DrawDetected(int what)
         {
           
@@ -209,6 +260,15 @@ namespace PDI
             text += "\tDiff: " + angle.ToString();
             text += "\n";
         }
+
+        public void GetChannels()
+        {
+            GetChannel(0);
+            GetChannel(1);
+            GetChannel(2);
+            GetChannel(3);
+        }
+
         private void SwitchColor(int channel, Rgba compare, Rgba set)
         {
             for (int x = 0; x < Thres[channel].Height; x++)
@@ -260,27 +320,7 @@ namespace PDI
 
         }
 
-        internal Image<Rgb, byte>[] DrawDetectedAvg(ref Image<Rgb, byte> final, ref Rgb[] color, bool append = true)
-        {
-            detect.figure[2] = final.Clone();
-
-
-            detect.lines = detect.GetAvgUDLR(true);
-            Image<Rgb, byte> nuevoResult0 = detect.DrawLines(color[0], append);
-            ////////////////////////////////////////////////////////////
-            detect.GetAvgDiagonalsPosNeg(true);
-            ///print red DIAGONALSS //////////////
-           // imagen.detect.lines = new LineSegment2D[] { imagen.detect.avgDiagonalPosCh[0] };
-            detect.lines = new LineSegment2D[] { detect.avgDiagonalPos };
-            Image<Rgb, byte> nuevoResult1 = detect.DrawLines(color[1], append);
-            //
-            // imagen.detect.lines = new LineSegment2D[] { imagen.detect.avgDiagonalPosCh[1] };
-            detect.lines = new LineSegment2D[] { detect.avgDiagonalNeg };
-            Image<Rgb, byte> nuevoResult2 = detect.DrawLines(color[2], append);
-
-
-            return new Image<Rgb, byte>[] { nuevoResult0, nuevoResult1, nuevoResult2 };
-        }
+       
     }
 
    

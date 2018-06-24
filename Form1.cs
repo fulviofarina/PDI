@@ -53,10 +53,8 @@ namespace PDI
             // img= img.Sobel(1, 1, 1).Convert<Rgba,Byte>();
             //  Image<Rgba, byte> redImg = imagen.GetRed();
 
-            imagen.GetChannel(0);
-            imagen.GetChannel(1);
-            imagen.GetChannel(2);
-            imagen.GetChannel(3);
+            imagen.GetChannels();
+
             int val = Convert.ToInt32(numericUpDown1.Value);
             rgbBox.Image = imagen.RGB[val].Bitmap;
           
@@ -65,7 +63,7 @@ namespace PDI
         private void substract_Click(object sender, EventArgs e)
         {
             int val = Convert.ToInt32(numericUpDown1.Value);
-
+            imagen.ElementSubstraction();
             lastBitMap = imagen.ElementSubs[val].Bitmap;
             segmentBox.Image = lastBitMap;
 
@@ -75,12 +73,9 @@ namespace PDI
 
             double d = Convert.ToDouble(textBox1.Text);
             double max = Convert.ToDouble(textBox2.Text);
-
-            imagen.Threshold(d, max);
-            imagen.ElementSubstraction();
-            imagen.Divide();
-
             int val = Convert.ToInt32(numericUpDown1.Value);
+
+            imagen.Threshold(d, max, val);
 
             lastBitMap = imagen.Thres[val].Bitmap;
 
@@ -97,7 +92,7 @@ namespace PDI
 
             //   ConvolutionKernelF kern = new ConvolutionKernelF(new float[,] { { 0, -1, 0 }, { 0, -1, 0 }, {0, -1, 0}  });
             // clone = clone.Convolution(kern).Convert<Rgb,byte>();
-
+            imagen.Divide(val);
             Image<Rgb, byte> redImg2;// = new Image<Rgb, Byte>(lastBitMap);
 
             redImg2 = imagen.Divs[val];//.Convolution(kern).Convert<Rgb,byte>();
@@ -147,11 +142,14 @@ namespace PDI
 
             imagen.BeginDetection(ref redImg2, what, draw);
 
+            
+            redImg2 = imagen.detect.figure[what];
 
-            // segmentBox.Image = imagen.detect.circleImage.Bitmap;
+
             richTextBox1.Text = imagen.detect.msgBuilder.ToString();
             imagen.detect.msgBuilder.Clear();
-            segmentBox.Image = imagen.detect.figure[what].Bitmap;
+
+            segmentBox.Image =redImg2.Bitmap;
 
 
 
@@ -285,9 +283,7 @@ namespace PDI
             IterateChannels(type);
 
 
-            imagen.escaledUI = imagen.rotated;
-
-            originalBox.Image = imagen.escaledUI.Bitmap;
+         
 
 
 
@@ -298,13 +294,7 @@ namespace PDI
         {
 
 
-
-
-
-            imagen.GetChannel(0);
-            imagen.GetChannel(1);
-            imagen.GetChannel(2);
-            imagen.GetChannel(3);
+            imagen.GetChannels();
 
 
             //line
@@ -340,7 +330,6 @@ namespace PDI
             double max = 250;
             double valor = 150;
 
-
             if (type == 0)
             {
                 factor = 0.6;
@@ -362,41 +351,27 @@ namespace PDI
 
                 valor = 150;
 
-                Image<Rgb, byte> result = null;
-
-                List<LineSegment2D[]> ls = new List<LineSegment2D[]>();
-
-                for (double val = valor; val <= max; val += step)
-                {
-                    imagen.Threshold(val, max, channel);
-                    imagen.ElementSubstraction(channel);
-                    //   imagen.Divide(channel);
-                    imagen.args[7] = 220; //actualiza threshold
-                    result = imagen.ElementSubs[channel].Convert<Rgb, byte>();
-
-                    imagen.BeginDetection(ref result, detectType);
-                    ls.Add(imagen.detect.lines);
-
-                }
+                Image<Rgb, byte> result=null;
+              
+                imagen.ElementSubsroutine(detectType, step, max, valor, channel, ref result, factorDiago);
 
                 //show last
-              //  segmentBox.Image = result.Bitmap;
-
-                ///  MessageBox.Show("Last Subs");
-                imagen.detect.SelectMany(channel, ref ls);
-                imagen.detect.GetDiagonalsPosNegPerChannel(factorDiago, channel);
-                imagen.detect.GetAvgDiagonalsPosNegPerChannel(channel);
+                //segmentBox.Image = result.Bitmap;
 
                 //print
                 result = imagen.detect.raw.CopyBlank();
-                printDiagonals(ref result, channel);
+                imagen.detect.DrawDiagonals(ref result, channel);
                 final = final.Add(result).Clone();
                 //show last
-            //    segmentBox.Image = result.Bitmap;
+               // segmentBox.Image = final.Bitmap;
                 ///////////////////////////////////////////////////
-                ///  MessageBox.Show("Diagonals");
+              //  MessageBox.Show("Diagonals");
 
             }
+
+
+            segmentBox.Image = final.Bitmap;
+
 
             Rgb r = new Rgb(255, 255, 255);
             final = final.InRange(r, r).Convert<Rgb, byte>();
@@ -407,7 +382,7 @@ namespace PDI
 
             Rgb[] color = new Rgb[3];
             imagen.detect.PickColorsAvg(type, ref color);
-            Image<Rgb, byte>[] arr = imagen.DrawDetectedAvg(ref final, ref color, false);
+            Image<Rgb, byte>[] arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
 
 
 
@@ -449,28 +424,37 @@ namespace PDI
             double avg = (avg1 - avg2) / 2;
             richTextBox1.AppendText("sum\t" + sum.ToString());
 
-            if (sum <= Math.Abs(lastSum) && imagen.rotated!=null)
+       
+
+            if (sum <= Math.Abs(lastSum) && imagen.rotated != null)
             {
                 imagen.rotated = imagen.escaledUI;
-               
                 richTextBox1.AppendText("SE HA ACABAO" + lastSum.ToString());
 
             }
-            else
+            else if (!double.IsNaN(avg))
             {
                 imagen.rotated = imagen.escaledUI.Rotate(avg, new Rgba(255, 255, 255, 255));
                 lastSum = sum;
 
-                MessageBox.Show("rotated " + Decimal.Round(Convert.ToDecimal(avg1.ToString()),2));
+                MessageBox.Show("rotated " + Decimal.Round(Convert.ToDecimal(avg1.ToString()), 2));
+
+            }
+            else 
+            {
+                MessageBox.Show("Problem with avg ");
 
             }
 
-            segmentBox.Image = imagen.rotated.Bitmap;
+            segmentBox.Image = rgbBox.Image;
+            rgbBox.Image = imagen.rotated.Bitmap;
 
 
-           
+            imagen.escaledUI = imagen.rotated;
 
-            return;
+          //  originalBox.Image = imagen.escaledUI.Bitmap;
+
+            // return;
 
             /////////////////
             ///////////
@@ -481,36 +465,14 @@ namespace PDI
 
                 Image<Rgb, byte> result = null;
 
-                List<LineSegment2D[]> ls = new List<LineSegment2D[]>();
+                imagen.DivideRoutine(detectType, step, percent, max, valor, channel, ref result, factor);
 
-                for (double val = valor; val <= max; val += step)
-                {
-                    imagen.Threshold(val, max, channel);
-                    imagen.ElementSubstraction(channel);
-                    imagen.Divide(channel);
-
-                    imagen.args[7] = val; //actualiza threshold
-
-                    result = imagen.Divs[channel].Convert<Rgb, byte>();
-
-                    imagen.BeginDetection(ref result, detectType);
-                    ls.Add(imagen.detect.lines);
-
-                }
-
-                //  segmentBox.Image = result.Bitmap;
-
-                ///MessageBox.Show("Last Divs");
-
-                //faltaba esto
-                imagen.detect.SelectMany(channel, ref ls);
-                imagen.detect.GetUDLR_HVOPerChannel(factor, channel, percent, true);
-                imagen.detect.GetAvgUDLR_HVOPerChannel(channel);
+               // segmentBox.Image = result.Bitmap;
 
 
                 result = imagen.detect.raw.CopyBlank();
                 //i iterador es el segmento arriba abajo iz derecha
-                printUDLR(ref result, channel);
+                imagen.detect.DrawUDLR(ref result, channel);
                 final = final.Add(result).Clone();
                 //   segmentBox.Image = result.Bitmap;
 
@@ -522,18 +484,18 @@ namespace PDI
 
             segmentBox.Image = final.Bitmap;
 
-            ///  MessageBox.Show("1.1");
+            // MessageBox.Show("1.1");
 
             r = new Rgb(255, 255, 255);
             final = final.InRange(r, r).Convert<Rgb, byte>();
             this.rgbBox.Image = final.Bitmap;
 
             //
-            ///   MessageBox.Show("1.2");
+              MessageBox.Show("1.2");
 
              color = new Rgb[3];
             imagen.detect.PickColorsAvg(type, ref color);
-           arr = imagen.DrawDetectedAvg(ref final, ref color, false);
+           arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
 
             //
 
@@ -560,37 +522,9 @@ namespace PDI
 
         }
 
-    
+     
 
-        private void printDiagonals(ref Image<Rgb, byte> result, int channel)
-        {
-            for (int posNeg = 0; posNeg < 2; posNeg++)
-            {
-                LineSegment2D[] aux = imagen.detect.Diagonals[channel, posNeg];
-                result = result.Add(imagen.detect.DrawLines(channel, ref aux)).Clone();
-                segmentBox.Image = result.Bitmap;
 
-            }
-
-           
-        }
-
-        private void  printUDLR(ref Image<Rgb, byte> result, int channel)
-        {
-            for (int q = 0; q < 4; q++)
-            {
-                for (int type = 0; type < 3; type++)
-                {
-                    LineSegment2D[] aux = imagen.detect.chUDLR_HVO[channel, q, type];
-                    Image<Rgb, byte> nuevoResult = imagen.detect.DrawLines(channel, ref aux);
-                    result = result.Add(nuevoResult).Clone();
-                    segmentBox.Image = result.Bitmap;
-
-                    //  MessageBox.Show(channel.ToString() + " " +q.ToString() + " " + type.ToString());
-                }
-            }
-           
-        }
 
         private void segmentBtn_Click(object sender, EventArgs e)
         {
