@@ -34,21 +34,14 @@ namespace PDI
             Rgba set = new Rgba(255, 255, 255, 0);
             SwitchColor(channel, black, set);
 
+          
+        }
+        public void Sobel(int channel, int xorder, int yorder, int aperture)
+        {
+          
+            Soby[channel] = escaledUI[channel].Sobel(xorder,yorder,aperture).Convert<Rgba,byte>();
 
-            //  Thres[channel] = RGB[channel].ThresholdBinary(r,g);
-            //   Thres[channel] = RGB[channel].Sub(Thres[channel]);
-            //Thres[channel] = Thres[channel].AbsDiff(g);
-            // Rgba r = PureColor(channel, d);
-            //    Thres[channel] = Thres[channel].InRange(r, r).Convert<Rgba,byte>();
 
-            //  Thres[channel] = RGB[channel].trunc(r);
-
-            //   Thres[channel] = RGB[channel].ThresholdBinary(r, g);
-            // Image<Gray, byte> Imae = RGB[channel].ThresholdBinary(r, g).Convert<Gray, byte>();
-            //Image<Gray, byte>[] Imae2 = new Image<Gray, byte>[] { Imae, Imae, Imae, Imae };
-            //hres[channel] = new Image<Rgba,byte>(Imae2);
-            // 
-            //Thres[channel] = RGB[channel].ThresholdToZeroInv(r);
         }
 
         public void Threshold(double d, double max)
@@ -159,6 +152,7 @@ namespace PDI
             }
             else
             {
+                rotated = escaledUI;
                 b.Append("Problem with avg ");
 
             }

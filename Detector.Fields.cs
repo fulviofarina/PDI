@@ -64,17 +64,29 @@ namespace PDI
 
         public LineSegment2D RefPos
         {
-            get => refPos = new  LineSegment2D(new Point(0, 0), new Point(raw.Width, raw.Height));
-
-            set => refPos = value;
+            get
+            {
+                refPos = new LineSegment2D(new Point(0, 0), new Point(raw.Width, raw.Height));
+                return refPos;
+            }
+            set
+            {
+                refPos = value;
+            }
         }
         private LineSegment2D refNeg;
 
         public LineSegment2D RefNeg
         {
-            get => refNeg = new LineSegment2D(new Point(raw.Width, 0), new Point(0, raw.Height));
-
-            set => refNeg = value;
+            get
+            {
+                refNeg = new LineSegment2D(new Point(raw.Width, 0), new Point(0, raw.Height));
+                return refNeg;
+            }
+            set
+            {
+                refNeg = value;
+            }
         }
         public Detector()
         {

@@ -265,7 +265,7 @@ namespace PDI
             //    lastBitMap = imagen.escaledUI.CopyBlank().Bitmap;
            
            
-            DiagonalsAndRotation(0);
+            DiagonalsAndRotation2(0); //2 is Sobel way
 
             /*
             factor = 0.1;
@@ -299,6 +299,9 @@ namespace PDI
 
         double lastSum = 0;
 
+
+
+
         private void UDLR(int type)
         {
             // return;
@@ -307,10 +310,7 @@ namespace PDI
 
             extractArgs();
 
-            int detectType = 2; //lines
-            int step = 10;
-            double percent = 0.25;
-            double max = 250;
+           
             if (type == 0)
             {
                 factor = 0.6;
@@ -320,17 +320,30 @@ namespace PDI
             {
                 factor = 0.1;
             }
-            double resetvalor = 1;
+        
 
 
             imagen.detect = new Detector();
 
             Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
 
-            imagen.DivideRoutine(detectType, step, percent, max, resetvalor, ref final, factor);
+         
+                double resetvalor = 1;
+            int detectType = 2; //lines
+            int step = 10;
+            double percent = 0.25;
+            double max = 250;
+              imagen.DivideRoutine(detectType, step, percent, max, resetvalor);
 
-            final = imagen.GetUDLRRoutine(percent, final, factor);
 
+
+            this.rgbBox.Image = final.Bitmap;
+            MessageBox.Show("0");
+
+
+
+            imagen.GetUDLRRoutine(percent, factor);
+            imagen.detect.DrawUDLR(ref  final);
             imagen.detect.GetAvgUDLR(true);
             //
             /// MessageBox.Show("0");
@@ -358,7 +371,6 @@ namespace PDI
 
            
         }
-
         private void DiagonalsAndRotation(int type)
         {
             imagen.GetChannels();
@@ -368,20 +380,17 @@ namespace PDI
             int detectType = 2; //lines
 
             int step = 10;
-          
+
 
             double max = 250;
 
 
             if (type == 0)
             {
-                factor = 0.6;
+              
                 factorDiago = 0.90;
             }
-            else if (type == 1)
-            {
-                factor = 0.1;
-            }
+        
 
             double resetvalor0 = 150;
 
@@ -391,9 +400,87 @@ namespace PDI
 
             Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
 
-            imagen.ElementSubsRoutine(detectType, step, max, resetvalor0, ref final, factorDiago);
+            imagen.ElementSubsRoutine(detectType, step, max, resetvalor0);
 
-            final = imagen.GetDiagonalsRoutine(final, factorDiago);
+            imagen.GetDiagonalsRoutine(factorDiago);
+            imagen.detect.DrawDiagonals(ref final);
+
+
+            imagen.detect.GetAvgDiagonalsPosNeg(true);
+
+            this.rgbBox.Image = final.Bitmap;
+
+            //  MessageBox.Show("1.1");
+
+            Rgb r = new Rgb(255, 255, 255);
+            final = final.InRange(r, r).Convert<Rgb, byte>().Clone();
+
+            this.segmentBox.Image = final.Bitmap;
+
+            //
+            final = final.CopyBlank();
+            //  MessageBox.Show("1.2");
+
+            Rgb[] color = new Rgb[3];
+            imagen.detect.PickColorsAvg(type, ref color);
+            Image<Rgb, byte>[] arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
+
+
+            printSteps(ref final, ref arr);
+
+            //  MessageBox.Show("1.2");
+
+            imagen.FindRotation(lastSum);
+
+
+            this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
+            this.segmentBox.Image = rgbBox.Image;
+            this.rgbBox.Image = imagen.rotated.Bitmap;
+
+
+            imagen.escaledUI = imagen.rotated;
+
+            //  originalBox.Image = imagen.escaledUI.Bitmap;
+
+
+
+        }
+        private void DiagonalsAndRotation2(int type)
+        {
+            imagen.GetChannels();
+
+            extractArgs();
+
+
+            if (type == 0)
+            {
+              
+                factorDiago = 0.90;
+            }
+        
+
+         
+
+            imagen.detect = new Detector();
+
+
+
+            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+
+            int resetvalor = 11;
+            int detectType = 2; //lines
+            int step = 2;
+            double threshold = 250;
+            int max = 19;
+            int xorder = Convert.ToInt16(xorderbox.Text);
+            int yorder = Convert.ToInt16(yorderbox.Text);
+
+            imagen.SobelRoutine(detectType, step, threshold, max, resetvalor,xorder,yorder);
+
+            imagen.GetDiagonalsRoutine( factorDiago);
+            imagen.detect.DrawDiagonals(ref final);
+
+         
             imagen.detect.GetAvgDiagonalsPosNeg(true);
 
             this.rgbBox.Image = final.Bitmap;
@@ -492,6 +579,14 @@ namespace PDI
 
             segmentBox.Image = imagen.detect.DrawLines(new Rgb(Color.Yellow), ref araytest).Bitmap;
             MessageBox.Show("finito");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int val = Convert.ToInt32(numericUpDown1.Value);
+            imagen.Sobel(val,1,1,Convert.ToInt32(apertureBox.Text));
+            lastBitMap = imagen.Soby[val].Bitmap;
+            segmentBox.Image = lastBitMap;
         }
     }
 

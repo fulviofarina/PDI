@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.originalBox = new System.Windows.Forms.PictureBox();
             this.RGBBtn = new System.Windows.Forms.Button();
             this.rgbBox = new System.Windows.Forms.PictureBox();
@@ -66,9 +66,9 @@
             this.browseBox = new System.Windows.Forms.TextBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.browseBtn = new System.Windows.Forms.Button();
-            this.filesBS = new System.Windows.Forms.BindingSource(this.components);
             this.filesBN = new System.Windows.Forms.BindingNavigator(this.components);
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.filesBS = new System.Windows.Forms.BindingSource(this.components);
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
@@ -105,6 +105,10 @@
             this.rotationBtn = new System.Windows.Forms.Button();
             this.subtractBtn = new System.Windows.Forms.Button();
             this.borderBtn = new System.Windows.Forms.Button();
+            this.sobelBtn = new System.Windows.Forms.Button();
+            this.apertureBox = new System.Windows.Forms.TextBox();
+            this.xorderbox = new System.Windows.Forms.TextBox();
+            this.yorderbox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.originalBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rgbBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).BeginInit();
@@ -113,9 +117,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgDB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoDGV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.filesBS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filesBN)).BeginInit();
             this.filesBN.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.filesBS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -359,16 +363,16 @@
             // dataGridViewTextBoxColumn3
             // 
             this.dataGridViewTextBoxColumn3.DataPropertyName = "Avg";
-            dataGridViewCellStyle5.Format = "N0";
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Format = "N0";
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridViewTextBoxColumn3.HeaderText = "Avg";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
             // dataGridViewTextBoxColumn4
             // 
             this.dataGridViewTextBoxColumn4.DataPropertyName = "SD";
-            dataGridViewCellStyle6.Format = "N0";
-            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Format = "N0";
+            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridViewTextBoxColumn4.HeaderText = "SD";
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
             // 
@@ -414,12 +418,6 @@
             this.browseBtn.UseVisualStyleBackColor = true;
             this.browseBtn.Click += new System.EventHandler(this.browseBtn_Click);
             // 
-            // filesBS
-            // 
-            this.filesBS.DataMember = "Files";
-            this.filesBS.DataSource = this.imgDB;
-            this.filesBS.PositionChanged += new System.EventHandler(this.filesBS_PositionChanged);
-            // 
             // filesBN
             // 
             this.filesBN.AddNewItem = this.toolStripButton1;
@@ -459,6 +457,12 @@
             this.toolStripButton1.RightToLeftAutoMirrorImage = true;
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.Text = "Add new";
+            // 
+            // filesBS
+            // 
+            this.filesBS.DataMember = "Files";
+            this.filesBS.DataSource = this.imgDB;
+            this.filesBS.PositionChanged += new System.EventHandler(this.filesBS_PositionChanged);
             // 
             // toolStripLabel1
             // 
@@ -694,7 +698,7 @@
             // 
             // erodeBtn
             // 
-            this.erodeBtn.Location = new System.Drawing.Point(1146, 14);
+            this.erodeBtn.Location = new System.Drawing.Point(1227, 14);
             this.erodeBtn.Name = "erodeBtn";
             this.erodeBtn.Size = new System.Drawing.Size(75, 23);
             this.erodeBtn.TabIndex = 30;
@@ -704,7 +708,7 @@
             // 
             // dilateBtn
             // 
-            this.dilateBtn.Location = new System.Drawing.Point(1227, 14);
+            this.dilateBtn.Location = new System.Drawing.Point(1308, 14);
             this.dilateBtn.Name = "dilateBtn";
             this.dilateBtn.Size = new System.Drawing.Size(75, 23);
             this.dilateBtn.TabIndex = 31;
@@ -714,7 +718,7 @@
             // 
             // erodeBox
             // 
-            this.erodeBox.Location = new System.Drawing.Point(1146, 47);
+            this.erodeBox.Location = new System.Drawing.Point(1227, 47);
             this.erodeBox.Name = "erodeBox";
             this.erodeBox.Size = new System.Drawing.Size(75, 20);
             this.erodeBox.TabIndex = 32;
@@ -722,7 +726,7 @@
             // 
             // dilatebox
             // 
-            this.dilatebox.Location = new System.Drawing.Point(1227, 47);
+            this.dilatebox.Location = new System.Drawing.Point(1308, 47);
             this.dilatebox.Name = "dilatebox";
             this.dilatebox.Size = new System.Drawing.Size(75, 20);
             this.dilatebox.TabIndex = 33;
@@ -771,11 +775,49 @@
             this.borderBtn.UseVisualStyleBackColor = true;
             this.borderBtn.Click += new System.EventHandler(this.borders_Click);
             // 
+            // sobelBtn
+            // 
+            this.sobelBtn.Location = new System.Drawing.Point(1088, 14);
+            this.sobelBtn.Name = "sobelBtn";
+            this.sobelBtn.Size = new System.Drawing.Size(96, 23);
+            this.sobelBtn.TabIndex = 38;
+            this.sobelBtn.Text = "Sobel";
+            this.sobelBtn.UseVisualStyleBackColor = true;
+            this.sobelBtn.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // apertureBox
+            // 
+            this.apertureBox.Location = new System.Drawing.Point(1155, 43);
+            this.apertureBox.Name = "apertureBox";
+            this.apertureBox.Size = new System.Drawing.Size(29, 20);
+            this.apertureBox.TabIndex = 39;
+            this.apertureBox.Text = "13";
+            // 
+            // xorderbox
+            // 
+            this.xorderbox.Location = new System.Drawing.Point(1088, 43);
+            this.xorderbox.Name = "xorderbox";
+            this.xorderbox.Size = new System.Drawing.Size(29, 20);
+            this.xorderbox.TabIndex = 40;
+            this.xorderbox.Text = "2";
+            // 
+            // yorderbox
+            // 
+            this.yorderbox.Location = new System.Drawing.Point(1120, 43);
+            this.yorderbox.Name = "yorderbox";
+            this.yorderbox.Size = new System.Drawing.Size(29, 20);
+            this.yorderbox.TabIndex = 41;
+            this.yorderbox.Text = "2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1425, 732);
+            this.Controls.Add(this.yorderbox);
+            this.Controls.Add(this.xorderbox);
+            this.Controls.Add(this.apertureBox);
+            this.Controls.Add(this.sobelBtn);
             this.Controls.Add(this.borderBtn);
             this.Controls.Add(this.subtractBtn);
             this.Controls.Add(this.rotationBtn);
@@ -825,10 +867,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgDB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoDGV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.filesBS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.filesBN)).EndInit();
             this.filesBN.ResumeLayout(false);
             this.filesBN.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.filesBS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -910,6 +952,10 @@
         private System.Windows.Forms.Button rotationBtn;
         private System.Windows.Forms.Button subtractBtn;
         private System.Windows.Forms.Button borderBtn;
+        private System.Windows.Forms.Button sobelBtn;
+        private System.Windows.Forms.TextBox apertureBox;
+        private System.Windows.Forms.TextBox xorderbox;
+        private System.Windows.Forms.TextBox yorderbox;
     }
 }
 

@@ -34,6 +34,7 @@ namespace PDI
         //  public Image<Rgba, Byte> alpha;
 
         public Image<Rgba, Byte>[] Thres;
+        public Image<Rgba, Byte>[] Soby;
 
 
         public Image<Rgba, Byte>[] ElementSubs;
@@ -53,6 +54,7 @@ namespace PDI
         public Img()
         {
             Thres = new Image<Rgba, byte>[4];
+            Soby = new Image<Rgba, byte>[4];
             ElementSubs = new Image<Rgba, byte>[4];
             Divs = new Image<Rgb, byte>[3];
             RGB = new Image<Rgba, byte>[4];

@@ -22,6 +22,40 @@ namespace PDI
 
     public partial class Detector
     {
+
+        public void DrawDiagonals(ref Image<Rgb, byte> final)
+        {
+            for (int channel = 0; channel < 3; channel++)
+            {
+                Image<Rgb, byte> result = null;
+            
+                //print
+                result = raw.CopyBlank();
+                DrawDiagonals(ref result, channel);
+                final = final.Add(result).Clone();
+            
+
+            }
+
+            
+        }
+
+        public void DrawUDLR(ref Image<Rgb, byte> final)
+        {
+            for (int channel = 0; channel < 3; channel++)
+            {
+
+                Image<Rgb, byte> result = null;
+                result = raw.CopyBlank();
+                //i iterador es el segmento arriba abajo iz derecha
+                DrawUDLR(ref result, channel);
+                final = final.Add(result).Clone();
+                //   segmentBox.Image = result.Bitmap;
+            }
+
+           
+        }
+
         public Image<Rgb, byte> DrawLines( int val, ref LineSegment2D[] arrRed)
         {
         
