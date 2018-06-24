@@ -75,7 +75,9 @@
     <None Include="Form1.Basura.cs">
       <SubType>Form</SubType>
     </None>
-    <Compile Include="Img.cs" />
+    <Compile Include="Img.Basic.cs" />
+    <Compile Include="Img.Fields.cs" />
+    <Compile Include="Img.Detection.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

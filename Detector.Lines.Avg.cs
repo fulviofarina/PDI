@@ -126,10 +126,10 @@ namespace PDI
 
 
 
-        public LineSegment2D[] GetAvgUDLR(bool extendeLenght = false)
+        public void GetAvgUDLR(bool extendeLenght = false)
         {
 
-            List<LineSegment2D> ls = new List<LineSegment2D>();
+
 
             LineSegment2D s;
 
@@ -166,9 +166,16 @@ namespace PDI
 
             avgUDLRLines = getAvgUDLR(ref UDLRLines);
 
-            ls.AddRange(avgUDLRLines_H);
-            ls.AddRange(avgUDLRLines_V);
-            ls.AddRange(avgUDLRLines);
+            
+        }
+
+        private LineSegment2D[] makeavgUDLRArray()
+        {
+            List<LineSegment2D> ls = new List<LineSegment2D>();
+            if (avgUDLRLines!=null) ls.AddRange(avgUDLRLines);
+            if (avgUDLRLines_H != null) ls.AddRange(avgUDLRLines_H);
+            if (avgUDLRLines_V != null) ls.AddRange(avgUDLRLines_V);
+          
 
             //GetAvgDiagonals();
 

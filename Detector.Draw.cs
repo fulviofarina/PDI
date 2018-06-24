@@ -74,10 +74,10 @@ namespace PDI
             figure[2] = final.Clone();
 
 
-            lines = GetAvgUDLR(true);
+            lines = makeavgUDLRArray();
             Image<Rgb, byte> nuevoResult0 = DrawLines(color[0], append);
             ////////////////////////////////////////////////////////////
-            GetAvgDiagonalsPosNeg(true);
+          
             ///print red DIAGONALSS //////////////
            // imagen.detect.lines = new LineSegment2D[] { imagen.detect.avgDiagonalPosCh[0] };
             lines = new LineSegment2D[] { avgDiagonalPos };
@@ -94,7 +94,7 @@ namespace PDI
         {
             color[0] = new Rgb(Color.Green);
             color[1] = new Rgb(Color.Red);
-            color[2] = new Rgb(Color.Magenta);
+            color[2] = new Rgb(Color.Maroon);
 
             if (type == 0)
             {
@@ -103,8 +103,8 @@ namespace PDI
             else if (type == 1)
             {
                 color[0] = new Rgb(Color.Yellow);
-                color[1] = new Rgb(Color.Blue);
-                color[2] = new Rgb(Color.Cyan);
+                color[1] = new Rgb(Color.Cyan);
+                color[2] = new Rgb(Color.Fuchsia);
             }
         }
 

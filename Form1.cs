@@ -255,17 +255,17 @@ namespace PDI
 
        
 
-        private void iterateBtn_Click(object sender, EventArgs e)
+        private void diagonalsAndRotation_Click(object sender, EventArgs e)
         {
 
-            factor = 0.6;
+         //   factor = 0.6;
             factorDiago = 0.90;
             
 
             //    lastBitMap = imagen.escaledUI.CopyBlank().Bitmap;
            
-            BorderIter(0);
-
+           
+            DiagonalsAndRotation(0);
 
             /*
             factor = 0.1;
@@ -275,28 +275,167 @@ namespace PDI
 
         }
 
-      
-        private void  BorderIter(int type)
+        private void borders_Click(object sender, EventArgs e)
         {
-            
-            // Image<Rgb,byte> result = new Image<Rgb, byte>()
-            IterateChannels(type);
+
+            factor = 0.1;
+          //  factorDiago = 0.90;
 
 
-         
+            //    lastBitMap = imagen.escaledUI.CopyBlank().Bitmap;
+
+
+            UDLR(0);
+
+            /*
+            factor = 0.1;
+            BorderIter(1);
+
+            */
+
+        }
+
+
+
+        double lastSum = 0;
+
+        private void UDLR(int type)
+        {
+            // return;
+
+            imagen.GetChannels();
+
+            extractArgs();
+
+            int detectType = 2; //lines
+            int step = 10;
+            double percent = 0.25;
+            double max = 250;
+            if (type == 0)
+            {
+                factor = 0.6;
+                factorDiago = 0.90;
+            }
+            else if (type == 1)
+            {
+                factor = 0.1;
+            }
+            double resetvalor = 1;
+
+
+            imagen.detect = new Detector();
+
+            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+
+            imagen.DivideRoutine(detectType, step, percent, max, resetvalor, ref final, factor);
+
+            final = imagen.GetUDLRRoutine(percent, final, factor);
+
+            imagen.detect.GetAvgUDLR(true);
+            //
+            /// MessageBox.Show("0");
+            this.rgbBox.Image = final.Bitmap;
+
+
+
+
+            Rgb r = new Rgb(255, 255, 255);
+             final = final.InRange(r, r).Convert<Rgb, byte>().Clone();
+
+           
+            this.segmentBox.Image = final.Bitmap;
+            //
+            final = final.CopyBlank();
+
+            Rgb[] color = new Rgb[3];
+            imagen.detect.PickColorsAvg(type, ref color);
+            Image<Rgb, byte>[] arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
+
+            //
+
+
+            printSteps(ref final, ref arr);
+
+           
+        }
+
+        private void DiagonalsAndRotation(int type)
+        {
+            imagen.GetChannels();
+
+            extractArgs();
+
+            int detectType = 2; //lines
+
+            int step = 10;
+          
+
+            double max = 250;
+
+
+            if (type == 0)
+            {
+                factor = 0.6;
+                factorDiago = 0.90;
+            }
+            else if (type == 1)
+            {
+                factor = 0.1;
+            }
+
+            double resetvalor0 = 150;
+
+            imagen.detect = new Detector();
+
+
+
+            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+
+            imagen.ElementSubsRoutine(detectType, step, max, resetvalor0, ref final, factorDiago);
+
+            final = imagen.GetDiagonalsRoutine(final, factorDiago);
+            imagen.detect.GetAvgDiagonalsPosNeg(true);
+
+            this.rgbBox.Image = final.Bitmap;
+
+            //  MessageBox.Show("1.1");
+
+            Rgb r = new Rgb(255, 255, 255);
+            final = final.InRange(r, r).Convert<Rgb, byte>().Clone();
+           
+            this.segmentBox.Image = final.Bitmap;
+
+            //
+            final = final.CopyBlank();
+          //  MessageBox.Show("1.2");
+
+            Rgb[] color = new Rgb[3];
+            imagen.detect.PickColorsAvg(type, ref color);
+            Image<Rgb, byte>[] arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
+
+
+            printSteps(ref final, ref arr);
+
+          //  MessageBox.Show("1.2");
+
+            imagen.FindRotation(lastSum);
+
+
+            this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
+            this.segmentBox.Image = rgbBox.Image;
+            this.rgbBox.Image = imagen.rotated.Bitmap;
+
+
+            imagen.escaledUI = imagen.rotated;
+
+            //  originalBox.Image = imagen.escaledUI.Bitmap;
 
 
 
         }
-        double lastSum = 0;
 
-        private void IterateChannels(int type)
+        private void extractArgs()
         {
-
-
-            imagen.GetChannels();
-
-
             //line
             double cth = Convert.ToDouble(cannyThreshold.Text);
             double cthlink = Convert.ToDouble(cannyThreshLinking.Text);
@@ -321,185 +460,10 @@ namespace PDI
                 minDist, minRadio, rho,
                 threshold, minWithLine,gap ,
                 epsilonFact , minArea };
+        }
 
-            int detectType = 2; //lines
-
-            int step = 10;
-            double percent = 0.25;
-
-            double max = 250;
-            double valor = 150;
-
-            if (type == 0)
-            {
-                factor = 0.6;
-                factorDiago = 0.90;
-            }
-            else if (type == 1)
-            {
-                factor = 0.1;
-            }
-
-
-            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
-
-
-            imagen.detect = new Detector();
-
-            for (int channel = 0; channel < 3; channel++)
-            {
-
-                valor = 150;
-
-                Image<Rgb, byte> result=null;
-              
-                imagen.ElementSubsroutine(detectType, step, max, valor, channel, ref result, factorDiago);
-
-                //show last
-                //segmentBox.Image = result.Bitmap;
-
-                //print
-                result = imagen.detect.raw.CopyBlank();
-                imagen.detect.DrawDiagonals(ref result, channel);
-                final = final.Add(result).Clone();
-                //show last
-               // segmentBox.Image = final.Bitmap;
-                ///////////////////////////////////////////////////
-              //  MessageBox.Show("Diagonals");
-
-            }
-
-
-            segmentBox.Image = final.Bitmap;
-
-
-            Rgb r = new Rgb(255, 255, 255);
-            final = final.InRange(r, r).Convert<Rgb, byte>();
-            this.rgbBox.Image = final.Bitmap;
-
-            //
-            ///   MessageBox.Show("1.2");
-
-            Rgb[] color = new Rgb[3];
-            imagen.detect.PickColorsAvg(type, ref color);
-            Image<Rgb, byte>[] arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
-
-
-
-
-            //   MessageBox.Show("rotacion");
-
-            LineSegment2D pos = imagen.detect.avgDiagonalPos;
-            LineSegment2D neg = imagen.detect.avgDiagonalNeg;
-
-            double[] angle = new double[5];
-          
-            double refAngle = 90;
-            double refAngle2 = refAngle-90;
-
-            string text;
-            imagen.FindAngle(pos, neg, refAngle, out angle[0], out text);
-
-            richTextBox1.Clear();
-            richTextBox1.AppendText("Pos,Neg\t" + text);
-
-            LineSegment2D refPos = imagen.detect.RefPos;
-            LineSegment2D refNeg = imagen.detect.RefNeg;
-
-            imagen.FindAngle(pos, refPos, refAngle2, out angle[1], out text);
-            richTextBox1.AppendText("Pos,refPos\t" + text);
-            imagen.FindAngle(neg, refPos, refAngle, out angle[2], out text);
-            richTextBox1.AppendText("Neg,refPos\t" + text);
-
-            imagen.FindAngle(pos, refNeg, -1* refAngle, out angle[3], out text);
-            richTextBox1.AppendText("Pos,refNeg\t" + text);
-            imagen.FindAngle(neg, refNeg, refAngle2, out angle[4], out text);
-            richTextBox1.AppendText("Neg,refNeg\t" + text);
-
-            double avg1 = (angle[1] + angle[2])/2;
-            double avg2 = (angle[3] + angle[4])/2;
-            richTextBox1.AppendText("avg1,avg2\t" + avg1.ToString()+","+avg2.ToString());
-
-            double sum = avg1+avg2;
-            double avg = (avg1 - avg2) / 2;
-            richTextBox1.AppendText("sum\t" + sum.ToString());
-
-       
-
-            if (sum <= Math.Abs(lastSum) && imagen.rotated != null)
-            {
-                imagen.rotated = imagen.escaledUI;
-                richTextBox1.AppendText("SE HA ACABAO" + lastSum.ToString());
-
-            }
-            else if (!double.IsNaN(avg))
-            {
-                imagen.rotated = imagen.escaledUI.Rotate(avg, new Rgba(255, 255, 255, 255));
-                lastSum = sum;
-
-                MessageBox.Show("rotated " + Decimal.Round(Convert.ToDecimal(avg1.ToString()), 2));
-
-            }
-            else 
-            {
-                MessageBox.Show("Problem with avg ");
-
-            }
-
-            segmentBox.Image = rgbBox.Image;
-            rgbBox.Image = imagen.rotated.Bitmap;
-
-
-            imagen.escaledUI = imagen.rotated;
-
-          //  originalBox.Image = imagen.escaledUI.Bitmap;
-
-            // return;
-
-            /////////////////
-            ///////////
-            for (int channel = 0; channel < 3; channel++)
-            {
-
-                valor = 1;
-
-                Image<Rgb, byte> result = null;
-
-                imagen.DivideRoutine(detectType, step, percent, max, valor, channel, ref result, factor);
-
-               // segmentBox.Image = result.Bitmap;
-
-
-                result = imagen.detect.raw.CopyBlank();
-                //i iterador es el segmento arriba abajo iz derecha
-                imagen.detect.DrawUDLR(ref result, channel);
-                final = final.Add(result).Clone();
-                //   segmentBox.Image = result.Bitmap;
-
-                /// MessageBox.Show("UDLRs");
-            }
-
-            //
-            /// MessageBox.Show("0");
-
-            segmentBox.Image = final.Bitmap;
-
-            // MessageBox.Show("1.1");
-
-            r = new Rgb(255, 255, 255);
-            final = final.InRange(r, r).Convert<Rgb, byte>();
-            this.rgbBox.Image = final.Bitmap;
-
-            //
-              MessageBox.Show("1.2");
-
-             color = new Rgb[3];
-            imagen.detect.PickColorsAvg(type, ref color);
-           arr = imagen.detect.DrawDetectedAvg(ref final, ref color, false);
-
-            //
-
-
+        private void printSteps(ref Image<Rgb, byte> final, ref Image<Rgb, byte>[] arr)
+        {
             this.rgbBox.Image = arr[0].Bitmap;
             //   MessageBox.Show(".0");
             this.rgbBox.Image = arr[1].Bitmap;
@@ -510,19 +474,11 @@ namespace PDI
 
             // MessageBox.Show(".2");
 
-            final = final.Add(arr[0].Add(arr[1]).Add(arr[2]));
+            final = final.Add(arr[0].Add(arr[1]).Add(arr[2])).Clone();
             this.rgbBox.Image = final.Bitmap;
-
-
-
-
-
-
-            MessageBox.Show("finito");
-
+            
         }
 
-     
 
 
 

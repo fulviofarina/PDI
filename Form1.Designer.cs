@@ -102,8 +102,9 @@
             this.erodeBox = new System.Windows.Forms.TextBox();
             this.dilatebox = new System.Windows.Forms.TextBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.iterateBtn = new System.Windows.Forms.Button();
+            this.rotationBtn = new System.Windows.Forms.Button();
             this.subtractBtn = new System.Windows.Forms.Button();
+            this.borderBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.originalBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rgbBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).BeginInit();
@@ -740,15 +741,15 @@
             this.numericUpDown1.TabIndex = 34;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
-            // iterateBtn
+            // rotationBtn
             // 
-            this.iterateBtn.Location = new System.Drawing.Point(777, 12);
-            this.iterateBtn.Name = "iterateBtn";
-            this.iterateBtn.Size = new System.Drawing.Size(75, 23);
-            this.iterateBtn.TabIndex = 35;
-            this.iterateBtn.Text = "ITERATE";
-            this.iterateBtn.UseVisualStyleBackColor = true;
-            this.iterateBtn.Click += new System.EventHandler(this.iterateBtn_Click);
+            this.rotationBtn.Location = new System.Drawing.Point(755, 11);
+            this.rotationBtn.Name = "rotationBtn";
+            this.rotationBtn.Size = new System.Drawing.Size(75, 23);
+            this.rotationBtn.TabIndex = 35;
+            this.rotationBtn.Text = "Rotation";
+            this.rotationBtn.UseVisualStyleBackColor = true;
+            this.rotationBtn.Click += new System.EventHandler(this.diagonalsAndRotation_Click);
             // 
             // subtractBtn
             // 
@@ -760,13 +761,24 @@
             this.subtractBtn.UseVisualStyleBackColor = true;
             this.subtractBtn.Click += new System.EventHandler(this.substract_Click);
             // 
+            // borderBtn
+            // 
+            this.borderBtn.Location = new System.Drawing.Point(836, 12);
+            this.borderBtn.Name = "borderBtn";
+            this.borderBtn.Size = new System.Drawing.Size(75, 23);
+            this.borderBtn.TabIndex = 37;
+            this.borderBtn.Text = "Borders";
+            this.borderBtn.UseVisualStyleBackColor = true;
+            this.borderBtn.Click += new System.EventHandler(this.borders_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1425, 732);
+            this.Controls.Add(this.borderBtn);
             this.Controls.Add(this.subtractBtn);
-            this.Controls.Add(this.iterateBtn);
+            this.Controls.Add(this.rotationBtn);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.dilatebox);
             this.Controls.Add(this.erodeBox);
@@ -895,8 +907,9 @@
         private System.Windows.Forms.TextBox erodeBox;
         private System.Windows.Forms.TextBox dilatebox;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button iterateBtn;
+        private System.Windows.Forms.Button rotationBtn;
         private System.Windows.Forms.Button subtractBtn;
+        private System.Windows.Forms.Button borderBtn;
     }
 }
 
