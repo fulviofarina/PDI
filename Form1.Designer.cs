@@ -1,4 +1,4 @@
-﻿namespace PDI
+﻿namespace PDIUI
 {
     partial class Form1
     {
@@ -30,8 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.originalBox = new System.Windows.Forms.PictureBox();
             this.RGBBtn = new System.Windows.Forms.Button();
             this.rgbBox = new System.Windows.Forms.PictureBox();
@@ -43,7 +41,6 @@
             this.basicInfoBindingNavigator = new System.Windows.Forms.BindingNavigator(this.components);
             this.bindingNavigatorAddNewItem = new System.Windows.Forms.ToolStripButton();
             this.basicInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.imgDB = new PDI.ImgDB();
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
             this.bindingNavigatorDeleteItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
@@ -56,13 +53,6 @@
             this.bindingNavigatorSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.basicInfoBindingNavigatorSaveItem = new System.Windows.Forms.ToolStripButton();
             this.basicInfoDGV = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.browseBox = new System.Windows.Forms.TextBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.browseBtn = new System.Windows.Forms.Button();
@@ -115,7 +105,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingNavigator)).BeginInit();
             this.basicInfoBindingNavigator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgDB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoDGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filesBN)).BeginInit();
             this.filesBN.SuspendLayout();
@@ -233,16 +222,6 @@
             this.bindingNavigatorAddNewItem.Size = new System.Drawing.Size(23, 22);
             this.bindingNavigatorAddNewItem.Text = "Add new";
             // 
-            // basicInfoBindingSource
-            // 
-            this.basicInfoBindingSource.DataMember = "BasicInfo";
-            this.basicInfoBindingSource.DataSource = this.imgDB;
-            // 
-            // imgDB
-            // 
-            this.imgDB.DataSetName = "ImgDB";
-            this.imgDB.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
@@ -332,69 +311,11 @@
             // 
             this.basicInfoDGV.AutoGenerateColumns = false;
             this.basicInfoDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.basicInfoDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn2,
-            this.dataGridViewTextBoxColumn3,
-            this.dataGridViewTextBoxColumn4,
-            this.dataGridViewTextBoxColumn5,
-            this.dataGridViewTextBoxColumn6,
-            this.dataGridViewTextBoxColumn7});
             this.basicInfoDGV.DataSource = this.basicInfoBindingSource;
             this.basicInfoDGV.Location = new System.Drawing.Point(32, 536);
             this.basicInfoDGV.Name = "basicInfoDGV";
             this.basicInfoDGV.Size = new System.Drawing.Size(383, 147);
             this.basicInfoDGV.TabIndex = 9;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "ImgID";
-            this.dataGridViewTextBoxColumn1.HeaderText = "ImgID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.Visible = false;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.DataPropertyName = "ID";
-            this.dataGridViewTextBoxColumn2.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.Visible = false;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.DataPropertyName = "Avg";
-            dataGridViewCellStyle1.Format = "N0";
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridViewTextBoxColumn3.HeaderText = "Avg";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.DataPropertyName = "SD";
-            dataGridViewCellStyle2.Format = "N0";
-            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridViewTextBoxColumn4.HeaderText = "SD";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.DataPropertyName = "Histogram";
-            this.dataGridViewTextBoxColumn5.HeaderText = "Histogram";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.Visible = false;
-            // 
-            // dataGridViewTextBoxColumn6
-            // 
-            this.dataGridViewTextBoxColumn6.DataPropertyName = "Channel";
-            this.dataGridViewTextBoxColumn6.HeaderText = "Channel";
-            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.Visible = false;
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.DataPropertyName = "ChannelName";
-            this.dataGridViewTextBoxColumn7.HeaderText = "Channel";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
             // 
             // browseBox
             // 
@@ -460,8 +381,6 @@
             // 
             // filesBS
             // 
-            this.filesBS.DataMember = "Files";
-            this.filesBS.DataSource = this.imgDB;
             this.filesBS.PositionChanged += new System.EventHandler(this.filesBS_PositionChanged);
             // 
             // toolStripLabel1
@@ -865,7 +784,6 @@
             this.basicInfoBindingNavigator.ResumeLayout(false);
             this.basicInfoBindingNavigator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgDB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoDGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.filesBN)).EndInit();
             this.filesBN.ResumeLayout(false);
@@ -887,7 +805,6 @@
         private System.Windows.Forms.Button divideBtn;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
-        private ImgDB imgDB;
         private System.Windows.Forms.BindingSource basicInfoBindingSource;
         private System.Windows.Forms.BindingNavigator basicInfoBindingNavigator;
         private System.Windows.Forms.ToolStripButton bindingNavigatorAddNewItem;
@@ -903,13 +820,6 @@
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator2;
         private System.Windows.Forms.ToolStripButton basicInfoBindingNavigatorSaveItem;
         private System.Windows.Forms.DataGridView basicInfoDGV;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.TextBox browseBox;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button browseBtn;

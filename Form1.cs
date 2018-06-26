@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using PDILib;
+using System;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Emgu;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
-using Emgu.CV.UI;
-using Emgu.Util;
 
-namespace PDI
+namespace PDIUI
 {
 
     public partial class Form1 : Form
     {
         Bitmap lastBitMap = null;
         Img imagen = new Img();
-        Emgu.CV.VideoWriter w;
+      //  Emgu.CV.VideoWriter w;
         private void GetFiles()
         {
             imagen.path = browseBox.Text; // "D:\\USBGDrive\\MAESTRIA\\LTER - Moorea";
@@ -193,11 +185,11 @@ namespace PDI
         {
             DataRowView drv = (DataRowView)filesBS.Current;
             ImgDB.FilesRow first = (ImgDB.FilesRow)drv.Row;
-            string filename = first.Path + first.Filename;
+            string filename =  first.Filename;
 
-           
 
-            originalBox.Image = imagen.GetBitMap(filename, 5);
+            imagen.GetImg(filename, 5);
+            originalBox.Image = imagen.escaledUI.Bitmap;
             imagen.GetBasicInfo();
             basicInfoBindingSource.DataSource = imagen.BInfo.table;
 
@@ -212,7 +204,7 @@ namespace PDI
             threshold_Click(sender, e);
 
             lastSum = 0;
-            imagen.rotated = null;
+            imagen.imgUtil.rotated = null;
 
         }
 
@@ -435,10 +427,10 @@ namespace PDI
 
             this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
             this.segmentBox.Image = rgbBox.Image;
-            this.rgbBox.Image = imagen.rotated.Bitmap;
+            this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
 
 
-            imagen.escaledUI = imagen.rotated;
+            imagen.escaledUI = imagen.imgUtil.rotated;
 
             //  originalBox.Image = imagen.escaledUI.Bitmap;
 
@@ -510,10 +502,10 @@ namespace PDI
 
             this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
             this.segmentBox.Image = rgbBox.Image;
-            this.rgbBox.Image = imagen.rotated.Bitmap;
+            this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
 
 
-            imagen.escaledUI = imagen.rotated;
+            imagen.escaledUI = imagen.imgUtil.rotated;
 
             //  originalBox.Image = imagen.escaledUI.Bitmap;
 
@@ -571,6 +563,12 @@ namespace PDI
 
         private void segmentBtn_Click(object sender, EventArgs e)
         {
+
+            imagen.GetImg(imagen.curentfilename, 10);
+            imagen.GetImgToCompare(imagen.curentfilename, 10);
+            segmentBox.Image = imagen.imgUtil.expandedTwo[1].Bitmap;
+          //  segmentBox.Image = imagen.expandedEscaledUI[1].Bitmap;
+            /*
             LineSegment2D pos = new LineSegment2D(new Point(0, 0), new Point(imagen.escaledUI.Width*3/4, imagen.escaledUI.Height*1/4));
 
             LineSegment2D d = new LineSegment2D(new Point(imagen.escaledUI.Width, 0), new Point(0, imagen.escaledUI.Height));
@@ -578,6 +576,7 @@ namespace PDI
             LineSegment2D[] araytest = new LineSegment2D[] { pos };
 
             segmentBox.Image = imagen.detect.DrawLines(new Rgb(Color.Yellow), ref araytest).Bitmap;
+    */
             MessageBox.Show("finito");
         }
 
