@@ -189,7 +189,7 @@ namespace PDIUI
 
 
             imagen.GetImg(filename, 5);
-            originalBox.Image = imagen.escaledUI.Bitmap;
+            originalBox.Image = imagen.UIOne.Bitmap;
             imagen.GetBasicInfo();
             basicInfoBindingSource.DataSource = imagen.BInfo.table;
 
@@ -317,7 +317,7 @@ namespace PDIUI
 
             imagen.detect = new Detector();
 
-            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+            Image<Rgb, byte> final = imagen.UIOne.Convert<Rgb, byte>().CopyBlank();
 
          
                 double resetvalor = 1;
@@ -390,7 +390,7 @@ namespace PDIUI
 
 
 
-            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+            Image<Rgb, byte> final = imagen.UIOne.Convert<Rgb, byte>().CopyBlank();
 
             imagen.ElementSubsRoutine(detectType, step, max, resetvalor0);
 
@@ -430,7 +430,7 @@ namespace PDIUI
             this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
 
 
-            imagen.escaledUI = imagen.imgUtil.rotated;
+            imagen.UIOne = imagen.imgUtil.rotated;
 
             //  originalBox.Image = imagen.escaledUI.Bitmap;
 
@@ -457,7 +457,7 @@ namespace PDIUI
 
 
 
-            Image<Rgb, byte> final = imagen.escaledUI.Convert<Rgb, byte>().CopyBlank();
+            Image<Rgb, byte> final = imagen.UIOne.Convert<Rgb, byte>().CopyBlank();
 
             int resetvalor = 11;
             int detectType = 2; //lines
@@ -505,7 +505,7 @@ namespace PDIUI
             this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
 
 
-            imagen.escaledUI = imagen.imgUtil.rotated;
+            imagen.UIOne = imagen.imgUtil.rotated;
 
             //  originalBox.Image = imagen.escaledUI.Bitmap;
 
