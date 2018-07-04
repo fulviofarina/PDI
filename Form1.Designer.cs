@@ -30,14 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.originalBox = new System.Windows.Forms.PictureBox();
             this.RGBBtn = new System.Windows.Forms.Button();
-            this.rgbBox = new System.Windows.Forms.PictureBox();
-            this.segmentBox = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.divideBtn = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.thresholdBinarybox = new System.Windows.Forms.TextBox();
+            this.thresholdBinaryMAxbox = new System.Windows.Forms.TextBox();
             this.basicInfoBindingNavigator = new System.Windows.Forms.BindingNavigator(this.components);
             this.bindingNavigatorAddNewItem = new System.Windows.Forms.ToolStripButton();
             this.basicInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -99,9 +96,12 @@
             this.apertureBox = new System.Windows.Forms.TextBox();
             this.xorderbox = new System.Windows.Forms.TextBox();
             this.yorderbox = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.originalBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rgbBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).BeginInit();
+            this.rgbbox = new Emgu.CV.UI.PanAndZoomPictureBox();
+            this.originalBox = new Emgu.CV.UI.PanAndZoomPictureBox();
+            this.segmentBox = new Emgu.CV.UI.PanAndZoomPictureBox();
+            this.matrixBox = new Emgu.CV.UI.MatrixBox();
+            this.histoBtnRaw = new System.Windows.Forms.Button();
+            this.histoBtnCorr = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingNavigator)).BeginInit();
             this.basicInfoBindingNavigator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingSource)).BeginInit();
@@ -110,15 +110,10 @@
             this.filesBN.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.filesBS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rgbbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.originalBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // originalBox
-            // 
-            this.originalBox.Location = new System.Drawing.Point(32, 129);
-            this.originalBox.Name = "originalBox";
-            this.originalBox.Size = new System.Drawing.Size(383, 401);
-            this.originalBox.TabIndex = 0;
-            this.originalBox.TabStop = false;
             // 
             // RGBBtn
             // 
@@ -129,22 +124,6 @@
             this.RGBBtn.Text = "Clear";
             this.RGBBtn.UseVisualStyleBackColor = true;
             this.RGBBtn.Click += new System.EventHandler(this.getRGB_Click);
-            // 
-            // rgbBox
-            // 
-            this.rgbBox.Location = new System.Drawing.Point(521, 129);
-            this.rgbBox.Name = "rgbBox";
-            this.rgbBox.Size = new System.Drawing.Size(383, 401);
-            this.rgbBox.TabIndex = 2;
-            this.rgbBox.TabStop = false;
-            // 
-            // segmentBox
-            // 
-            this.segmentBox.Location = new System.Drawing.Point(989, 131);
-            this.segmentBox.Name = "segmentBox";
-            this.segmentBox.Size = new System.Drawing.Size(383, 401);
-            this.segmentBox.TabIndex = 3;
-            this.segmentBox.TabStop = false;
             // 
             // button1
             // 
@@ -166,21 +145,21 @@
             this.divideBtn.UseVisualStyleBackColor = true;
             this.divideBtn.Click += new System.EventHandler(this.divide_Click);
             // 
-            // textBox1
+            // thresholdBinarybox
             // 
-            this.textBox1.Location = new System.Drawing.Point(521, 537);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 6;
-            this.textBox1.Text = "1";
+            this.thresholdBinarybox.Location = new System.Drawing.Point(500, 536);
+            this.thresholdBinarybox.Name = "thresholdBinarybox";
+            this.thresholdBinarybox.Size = new System.Drawing.Size(100, 20);
+            this.thresholdBinarybox.TabIndex = 6;
+            this.thresholdBinarybox.Text = "1";
             // 
-            // textBox2
+            // thresholdBinaryMAxbox
             // 
-            this.textBox2.Location = new System.Drawing.Point(786, 536);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 7;
-            this.textBox2.Text = "255";
+            this.thresholdBinaryMAxbox.Location = new System.Drawing.Point(811, 536);
+            this.thresholdBinaryMAxbox.Name = "thresholdBinaryMAxbox";
+            this.thresholdBinaryMAxbox.Size = new System.Drawing.Size(100, 20);
+            this.thresholdBinaryMAxbox.TabIndex = 7;
+            this.thresholdBinaryMAxbox.Text = "255";
             // 
             // basicInfoBindingNavigator
             // 
@@ -603,7 +582,7 @@
             this.minAreabox.Name = "minAreabox";
             this.minAreabox.Size = new System.Drawing.Size(100, 20);
             this.minAreabox.TabIndex = 28;
-            this.minAreabox.Text = "5";
+            this.minAreabox.Text = "200";
             // 
             // segmentBtn
             // 
@@ -702,7 +681,7 @@
             this.sobelBtn.TabIndex = 38;
             this.sobelBtn.Text = "Sobel";
             this.sobelBtn.UseVisualStyleBackColor = true;
-            this.sobelBtn.Click += new System.EventHandler(this.button2_Click);
+            this.sobelBtn.Click += new System.EventHandler(this.sobel_Click);
             // 
             // apertureBox
             // 
@@ -728,11 +707,67 @@
             this.yorderbox.TabIndex = 41;
             this.yorderbox.Text = "2";
             // 
+            // rgbbox
+            // 
+            this.rgbbox.Location = new System.Drawing.Point(500, 131);
+            this.rgbbox.Name = "rgbbox";
+            this.rgbbox.Size = new System.Drawing.Size(411, 399);
+            this.rgbbox.TabIndex = 42;
+            this.rgbbox.TabStop = false;
+            // 
+            // originalBox
+            // 
+            this.originalBox.Location = new System.Drawing.Point(32, 131);
+            this.originalBox.Name = "originalBox";
+            this.originalBox.Size = new System.Drawing.Size(411, 399);
+            this.originalBox.TabIndex = 43;
+            this.originalBox.TabStop = false;
+            // 
+            // segmentBox
+            // 
+            this.segmentBox.Location = new System.Drawing.Point(989, 131);
+            this.segmentBox.Name = "segmentBox";
+            this.segmentBox.Size = new System.Drawing.Size(411, 399);
+            this.segmentBox.TabIndex = 44;
+            this.segmentBox.TabStop = false;
+            // 
+            // matrixBox
+            // 
+            this.matrixBox.Location = new System.Drawing.Point(508, 740);
+            this.matrixBox.Matrix = null;
+            this.matrixBox.Name = "matrixBox";
+            this.matrixBox.Size = new System.Drawing.Size(383, 246);
+            this.matrixBox.TabIndex = 45;
+            // 
+            // histoBtnRaw
+            // 
+            this.histoBtnRaw.Location = new System.Drawing.Point(32, 90);
+            this.histoBtnRaw.Name = "histoBtnRaw";
+            this.histoBtnRaw.Size = new System.Drawing.Size(99, 23);
+            this.histoBtnRaw.TabIndex = 46;
+            this.histoBtnRaw.Text = "HistogramRaw";
+            this.histoBtnRaw.UseVisualStyleBackColor = true;
+            // 
+            // histoBtnCorr
+            // 
+            this.histoBtnCorr.Location = new System.Drawing.Point(344, 87);
+            this.histoBtnCorr.Name = "histoBtnCorr";
+            this.histoBtnCorr.Size = new System.Drawing.Size(99, 23);
+            this.histoBtnCorr.TabIndex = 47;
+            this.histoBtnCorr.Text = "HistogramCorrected";
+            this.histoBtnCorr.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1425, 732);
+            this.ClientSize = new System.Drawing.Size(1425, 993);
+            this.Controls.Add(this.histoBtnCorr);
+            this.Controls.Add(this.histoBtnRaw);
+            this.Controls.Add(this.matrixBox);
+            this.Controls.Add(this.segmentBox);
+            this.Controls.Add(this.originalBox);
+            this.Controls.Add(this.rgbbox);
             this.Controls.Add(this.yorderbox);
             this.Controls.Add(this.xorderbox);
             this.Controls.Add(this.apertureBox);
@@ -767,19 +802,14 @@
             this.Controls.Add(this.browseBox);
             this.Controls.Add(this.basicInfoDGV);
             this.Controls.Add(this.basicInfoBindingNavigator);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.thresholdBinaryMAxbox);
+            this.Controls.Add(this.thresholdBinarybox);
             this.Controls.Add(this.divideBtn);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.segmentBox);
-            this.Controls.Add(this.rgbBox);
             this.Controls.Add(this.RGBBtn);
-            this.Controls.Add(this.originalBox);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.originalBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rgbBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).EndInit();
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.basicInfoBindingNavigator)).EndInit();
             this.basicInfoBindingNavigator.ResumeLayout(false);
             this.basicInfoBindingNavigator.PerformLayout();
@@ -790,21 +820,20 @@
             this.filesBN.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.filesBS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rgbbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.originalBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.segmentBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox originalBox;
         private System.Windows.Forms.Button RGBBtn;
-        private System.Windows.Forms.PictureBox rgbBox;
-        private System.Windows.Forms.PictureBox segmentBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button divideBtn;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox thresholdBinarybox;
+        private System.Windows.Forms.TextBox thresholdBinaryMAxbox;
         private System.Windows.Forms.BindingSource basicInfoBindingSource;
         private System.Windows.Forms.BindingNavigator basicInfoBindingNavigator;
         private System.Windows.Forms.ToolStripButton bindingNavigatorAddNewItem;
@@ -866,6 +895,12 @@
         private System.Windows.Forms.TextBox apertureBox;
         private System.Windows.Forms.TextBox xorderbox;
         private System.Windows.Forms.TextBox yorderbox;
+        private Emgu.CV.UI.PanAndZoomPictureBox rgbbox;
+        private Emgu.CV.UI.PanAndZoomPictureBox originalBox;
+        private Emgu.CV.UI.PanAndZoomPictureBox segmentBox;
+        private Emgu.CV.UI.MatrixBox matrixBox;
+        private System.Windows.Forms.Button histoBtnRaw;
+        private System.Windows.Forms.Button histoBtnCorr;
     }
 }
 

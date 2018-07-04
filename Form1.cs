@@ -2,8 +2,10 @@
 using Emgu.CV.Structure;
 using PDILib;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace PDIUI
@@ -33,7 +35,7 @@ namespace PDIUI
 
            // Emgu.CV.gpu
          
-            GetFiles();
+           
 
         }
 
@@ -48,14 +50,14 @@ namespace PDIUI
             imagen.GetChannels();
 
             int val = Convert.ToInt32(numericUpDown1.Value);
-            rgbBox.Image = imagen.RGB[val].Bitmap;
+            rgbbox.Image = imagen.RGB[val].Bitmap;
           
 
         }
         private void substract_Click(object sender, EventArgs e)
         {
             int val = Convert.ToInt32(numericUpDown1.Value);
-            imagen.ElementSubstraction();
+            imagen.ElementSubstraction(val);
             lastBitMap = imagen.ElementSubs[val].Bitmap;
             segmentBox.Image = lastBitMap;
 
@@ -63,15 +65,15 @@ namespace PDIUI
             private void threshold_Click(object sender, EventArgs e)
         {
 
-            double d = Convert.ToDouble(textBox1.Text);
-            double max = Convert.ToDouble(textBox2.Text);
+            double d = Convert.ToDouble(thresholdBinarybox.Text);
+            double max = Convert.ToDouble(thresholdBinaryMAxbox.Text);
             int val = Convert.ToInt32(numericUpDown1.Value);
 
             imagen.Threshold(d, max, val);
 
             lastBitMap = imagen.Thres[val].Bitmap;
 
-            rgbBox.Image = lastBitMap;
+            rgbbox.Image = lastBitMap;
 
        
         }
@@ -100,8 +102,9 @@ namespace PDIUI
 
         private void figureClick(object sender, EventArgs e)
         {
-            if (lastBitMap == null) return;
-            Image<Rgb, byte> redImg2 = new Image<Rgb, Byte>(lastBitMap);
+            Bitmap bm = new Bitmap(segmentBox.Image);
+           // Image<Rgb, byte> redImg2 = new Image<Rgb, Byte>(bm);
+            Image<Rgb, byte> redImg2 = new Image<Rgb, Byte>(bm);
             Button btn = (Button)sender;
             int what = Convert.ToInt32(btn.Tag);
             bool draw = true;
@@ -192,12 +195,20 @@ namespace PDIUI
             originalBox.Image = imagen.UIOne.Bitmap;
             imagen.GetBasicInfo();
             basicInfoBindingSource.DataSource = imagen.BInfo.table;
+            this.basicInfoDGV.AutoGenerateColumns = true;
+            this.basicInfoDGV.DataSource = this.basicInfoBindingSource;
 
-         //   if (w != null) w.Dispose();
-           // int Codec = Emgu.Util.C('D', 'I', 'V', '3');
-          
-          //  w = new VideoWriter(filename + ".mp4",-1, 5, new Size(200,200), true);
            
+                
+           // histogramBox.ZedGraphControl.SaveFileDialog.OverwritePrompt = true;
+           // histogramBox.ZedGraphControl.SaveFileDialog.CreatePrompt = false;
+           // histogramBox.ZedGraphControl.SaveAs(imagen.path + "\\" + imagen.curentfilename.Replace(".jpg", ".Histo.jpg"));
+
+            //   if (w != null) w.Dispose();
+            // int Codec = Emgu.Util.C('D', 'I', 'V', '3');
+
+            //  w = new VideoWriter(filename + ".mp4",-1, 5, new Size(200,200), true);
+
 
 
             getRGB_Click(sender, e);
@@ -220,7 +231,7 @@ namespace PDIUI
             redImg2 = redImg2.Erode(Convert.ToInt32(erodeBox.Text));
 
 
-
+          
 
             segmentBox.Image = redImg2.Bitmap;
         }
@@ -329,7 +340,7 @@ namespace PDIUI
 
 
 
-            this.rgbBox.Image = final.Bitmap;
+            this.rgbbox.Image = final.Bitmap;
             MessageBox.Show("0");
 
 
@@ -339,7 +350,7 @@ namespace PDIUI
             imagen.detect.GetAvgUDLR(true);
             //
             /// MessageBox.Show("0");
-            this.rgbBox.Image = final.Bitmap;
+            this.rgbbox.Image = final.Bitmap;
 
 
 
@@ -400,7 +411,7 @@ namespace PDIUI
 
             imagen.detect.GetAvgDiagonalsPosNeg(true);
 
-            this.rgbBox.Image = final.Bitmap;
+            this.rgbbox.Image = final.Bitmap;
 
             //  MessageBox.Show("1.1");
 
@@ -426,8 +437,8 @@ namespace PDIUI
 
 
             this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
-            this.segmentBox.Image = rgbBox.Image;
-            this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
+            this.segmentBox.Image = rgbbox.Image;
+            this.rgbbox.Image = imagen.imgUtil.rotated.Bitmap;
 
 
             imagen.UIOne = imagen.imgUtil.rotated;
@@ -462,7 +473,7 @@ namespace PDIUI
             int resetvalor = 11;
             int detectType = 2; //lines
             int step = 2;
-            double threshold = 250;
+            double threshold = 220;
             int max = 19;
             int xorder = Convert.ToInt16(xorderbox.Text);
             int yorder = Convert.ToInt16(yorderbox.Text);
@@ -475,7 +486,7 @@ namespace PDIUI
          
             imagen.detect.GetAvgDiagonalsPosNeg(true);
 
-            this.rgbBox.Image = final.Bitmap;
+            this.rgbbox.Image = final.Bitmap;
 
             //  MessageBox.Show("1.1");
 
@@ -501,15 +512,66 @@ namespace PDIUI
 
 
             this.richTextBox1.Text = imagen.detect.msgBuilder.ToString();
-            this.segmentBox.Image = rgbBox.Image;
-            this.rgbBox.Image = imagen.imgUtil.rotated.Bitmap;
+            this.segmentBox.Image = rgbbox.Image;
 
 
-            imagen.UIOne = imagen.imgUtil.rotated;
+            //factores
 
+            Image<Rgba, byte> other = imagen.imgUtil.rotated.Clone();
+
+
+            ImgDB.BasicInfoRow red = imagen.BInfo.table.FirstOrDefault( o=> o.Channel==0);
+            ImgDB.BasicInfoRow green = imagen.BInfo.table.FirstOrDefault(o => o.Channel == 1);
+            ImgDB.BasicInfoRow blue = imagen.BInfo.table.FirstOrDefault(o => o.Channel == 2);
+            ImgDB.BasicInfoRow alpha = imagen.BInfo.table.FirstOrDefault(o => o.Channel == 3);
+
+          
+
+            //imagen.imgUtil.rotated._EqualizeHist() ;
+            Img.ChangeColor(ref imagen.imgUtil.rotated, (float)red.Factor, (float)green.Factor, (float)blue.Factor, (float)alpha.Factor);
+            //imagen.UIOne = imagen.imgUtil.rotated;
+            this.rgbbox.Image = imagen.imgUtil.rotated.Bitmap;
+           // this.matrixBox.Matrix = imagen.imgUtil.rotated.Mat.Data;
+
+            imagen.imgUtil.rotated.Save(imagen.path+ "\\" + imagen.curentfilename.Replace(".jpg", ".out.jpg"));
             //  originalBox.Image = imagen.escaledUI.Bitmap;
 
 
+            float sum = (float)(red.Avg + green.Avg + blue.Avg);
+            sum /= 3;
+            float rF = 1;
+            float gF = 1;
+            float bF = 1;
+            float AF = 1;
+            rF = (float)(sum / red.Avg);
+            gF = (float)(sum / green.Avg);
+            bF = (float)(sum / blue.Avg);
+           
+
+            Img.ChangeColor(ref other, rF, gF, bF, AF);
+
+
+            // CvInvoke.CLAHE(other, 1, new Size(10, 10), other);
+            double radius = Img.CalculateDiagonalLenght(other.Width, other.Height);
+            radius /= 2;
+             Point p = imagen.GetMiddlePointCanvas(radius, ref other);
+            Rectangle rec = new Rectangle(p.X , p.Y , 2, 2);
+          //  Rectangle rec = new Rectangle(p.X-(p.X*1/5), p.Y+ (p.Y * 3 / 2), 150,150);
+          //  other.ROI = rec;
+           Image<Rgba,byte> pantone  = other.GetSubRect(rec);
+          //  other.ROI = rec;
+            Point ul = new Point(rec.X, rec.Y);
+            Point bl = new Point(rec.Left, rec.Bottom);
+            Point ur = new Point(rec.Right, rec.Top);
+            Point br = new Point(rec.Right, rec.Bottom);
+            other.DrawPolyline(new Point[] { ul, bl, br, ur }, true, new Rgba(255, 0, 0, 255), 2, Emgu.CV.CvEnum.LineType.FourConnected);
+          //  source.CopyTo(destiny);
+         //   other.ROI = Rectangle.Empty;
+
+
+
+           // this.segmentBox.Image = pantone.Bitmap;
+            this.segmentBox.Image = other.Bitmap;
 
         }
 
@@ -543,18 +605,18 @@ namespace PDIUI
 
         private void printSteps(ref Image<Rgb, byte> final, ref Image<Rgb, byte>[] arr)
         {
-            this.rgbBox.Image = arr[0].Bitmap;
+            this.rgbbox.Image = arr[0].Bitmap;
             //   MessageBox.Show(".0");
-            this.rgbBox.Image = arr[1].Bitmap;
+            this.rgbbox.Image = arr[1].Bitmap;
             //
             //      MessageBox.Show(".1"); 
             ///    
-            this.rgbBox.Image = arr[2].Bitmap;
+            this.rgbbox.Image = arr[2].Bitmap;
 
             // MessageBox.Show(".2");
 
             final = final.Add(arr[0].Add(arr[1]).Add(arr[2])).Clone();
-            this.rgbBox.Image = final.Bitmap;
+            this.rgbbox.Image = final.Bitmap;
             
         }
 
@@ -564,10 +626,67 @@ namespace PDIUI
         private void segmentBtn_Click(object sender, EventArgs e)
         {
 
-            imagen.GetImg(imagen.curentfilename, 10);
-            imagen.GetImgToCompare(imagen.curentfilename, 10);
-            segmentBox.Image = imagen.imgUtil.expandedTwo[1].Bitmap;
-          //  segmentBox.Image = imagen.expandedEscaledUI[1].Bitmap;
+            imagen.GetChannels();
+
+
+
+            //experimento();
+
+
+            // int channel = Convert.ToInt32(numericUpDown1.Value);
+            double thres = 10;
+            double max = 300;
+
+            extractArgs();
+            for (int channel = 0; channel < 3; channel++)
+            {
+                imagen.GetAllBoxesRoutine(channel, thres, max);
+
+            }
+            for (int channel = 0; channel < 3; channel++)
+            {
+
+                imagen.detect.GetUDLRBoxes_PerChannel(0.05, channel, 0.25);
+
+                // segmentBox.Image = imagen.Divs[channel].Bitmap;
+            }
+
+            Image<Rgb, byte> blank = imagen.Divs[0].CopyBlank();
+
+            for (int channel = 0; channel < 3; channel++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    foreach (var item in imagen.detect.UDLRBoxes[channel, j])
+                    {
+
+                        blank.Draw(item, new Rgb(Color.White), 2);
+
+
+
+                    }
+
+                    segmentBox.Image = blank.Bitmap;
+
+
+                    // MessageBox.Show(j.ToString());
+
+                }
+                //  imagen.detect.GetUDLRBoxes_PerChannel(0.05, channel, 0.25);
+
+
+            }
+
+
+
+
+            //    imagen.GetImg(imagen.curentfilename, 10);
+            //   imagen.GetImgToCompare(imagen.curentfilename, 10);
+            //  segmentBox.Image = imagen.imgUtil.expandedTwo[1].Bitmap;
+
+
+
+            //  segmentBox.Image = imagen.expandedEscaledUI[1].Bitmap;
             /*
             LineSegment2D pos = new LineSegment2D(new Point(0, 0), new Point(imagen.escaledUI.Width*3/4, imagen.escaledUI.Height*1/4));
 
@@ -577,15 +696,121 @@ namespace PDIUI
 
             segmentBox.Image = imagen.detect.DrawLines(new Rgb(Color.Yellow), ref araytest).Bitmap;
     */
-            MessageBox.Show("finito");
+            //   MessageBox.Show("finito");
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void experimento()
+        {
+            Matrix<float> m = new Matrix<float>(2, 3, 1);
+            m.SetIdentity();
+
+            CvInvoke.NamedWindow("lolo", Emgu.CV.CvEnum.NamedWindowType.AutoSize);
+
+            CvInvoke.Imshow("yaya", imagen.RGB[0]);
+
+
+            Mat n = new Mat();
+
+            PointF[] inputQuad = new PointF[4];
+            PointF[] outputQuad = new PointF[4];
+            inputQuad[0] = new PointF(-30, -60);
+            inputQuad[1] = new PointF(+50, -50);
+            inputQuad[2] = new PointF(+100, +50);
+            inputQuad[3] = new PointF(-50, +50);
+            // The 4 points where the mapping is to be done , from top-left in clockwise order
+            outputQuad[0] = new PointF(0, 0);
+            outputQuad[1] = new PointF(-1, 0);
+            outputQuad[2] = new PointF(-1, -1);
+            outputQuad[3] = new PointF(0, -1);
+
+
+
+            n = CvInvoke.GetAffineTransform(inputQuad, outputQuad);
+
+            CvInvoke.PerspectiveTransform(imagen.RGB[0], imagen.RGB[1], n);
+        }
+
+        private void sobel_Click(object sender, EventArgs e)
         {
             int val = Convert.ToInt32(numericUpDown1.Value);
-            imagen.Sobel(val,1,1,Convert.ToInt32(apertureBox.Text));
+            int xorder = Convert.ToInt16(xorderbox.Text);
+            int yorder = Convert.ToInt16(yorderbox.Text);
+            int aperture = Convert.ToInt32(apertureBox.Text);
+            imagen.Sobel(val,xorder,yorder,aperture);
             lastBitMap = imagen.Soby[val].Bitmap;
             segmentBox.Image = lastBitMap;
+        }
+
+     
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            GetFiles();
+
+
+            Form m, m2;
+            Emgu.CV.UI.HistogramBox hbox;
+            Emgu.CV.UI.HistogramBox hbox2;
+
+
+            m = new Form();
+             hbox = new Emgu.CV.UI.HistogramBox();
+            m.Controls.Add(hbox);
+            hbox.Dock = DockStyle.Fill;
+            hbox.ZedGraphControl.Dock = DockStyle.Fill;
+
+            m.Show();
+            m.Visible = false;
+            m.FormClosing += M_FormClosing;
+
+             m2 = new Form();
+            hbox2 = new Emgu.CV.UI.HistogramBox();
+            m2.Controls.Add(hbox2);
+            hbox2.Dock = DockStyle.Fill;
+            hbox2.ZedGraphControl.Dock = DockStyle.Fill;
+
+            m2.Show();
+            m2.Visible = false;
+            m2.FormClosing += M_FormClosing;
+           
+
+            string extToAdd = ".Histo.jpg";
+            string savePath = imagen.path + "\\" + imagen.curentfilename.Replace(".jpg", extToAdd);
+
+          
+
+            histoBtnRaw.Click += delegate
+            {
+                Image<Rgba, byte> aux = imagen.UIOne;
+                SetHistogram(ref aux, savePath,ref hbox);
+                m.Visible = true;
+            };
+            extToAdd = ".HistoCorrected.jpg";
+            savePath = imagen.path + "\\" + imagen.curentfilename.Replace(".jpg", extToAdd);
+          
+         
+            this.histoBtnCorr.Click += delegate
+            {
+                Image<Rgba, byte> aux = imagen.imgUtil.rotated;
+                SetHistogram(ref aux, savePath, ref hbox2);
+                m2.Visible = true;
+            };
+
+        }
+
+        private static void SetHistogram(ref Image<Rgba, byte> aux, string savePath, ref Emgu.CV.UI.HistogramBox h)
+        {
+            h.ClearHistogram();
+            h.GenerateHistograms(aux, 256);
+            h.ZedGraphControl.AxisChange();
+            h.ZedGraphControl.GetImage()
+                .Save(savePath);
+        }
+
+        private void M_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            (sender as Form).Visible = false;
         }
     }
 
