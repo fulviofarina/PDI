@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PDILib.Detector">
+    <Position X="8" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AMjUAIAYEKphLUAEAHyAACiciWIhIATBBFAgAAEgBkA=</HashCode>
+      <FileName>Detector\Detector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.DrawMatches" Collapsed="true">
+    <Position X="11.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DrawMatches.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.Img">
+    <Position X="5" Y="0.5" Width="2.75" />
+    <NestedTypes>
+      <Class Name="PDILib.Img.Fourier" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Img\Fourier.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>JAQWBIIhASCCEgAIkgQCCEIEAkAAEFEgggghAIhCsAY=</HashCode>
+      <FileName>Img\Basic.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.BasicInfo">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAACAAAABAAIAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Img\BasicInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.Directory">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Img\Directory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.ImgUtil">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAEAACAABAAAAAAAAAAAIAEAAAAAAABAAIAA=</HashCode>
+      <FileName>Img\ImgUtil.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PDILib.ImgDB">
+    <Position X="14" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="PDILib.ImgDB.BasicInfoRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Delegate Name="PDILib.ImgDB.FilesRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="PDILib.ImgDB.BasicInfoDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="PDILib.ImgDB.FilesDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="PDILib.ImgDB.BasicInfoRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="PDILib.ImgDB.FilesRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="PDILib.ImgDB.BasicInfoRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="PDILib.ImgDB.FilesRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAyAAAAJABAEAQAAAAAgCQBgIAAAAAAEQBJA=</HashCode>
+      <FileName>ImgDB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
