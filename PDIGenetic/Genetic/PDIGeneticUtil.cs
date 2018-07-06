@@ -26,10 +26,10 @@ namespace PDIGenetic
         {
             MinTX = 0;
             MinTY = 0;
-            MaxTX = 300;
-            MaxTY = 300;
+            MaxTX = 250;
+            MaxTY = 250;
 
-            ScaleMin =0.1;
+            ScaleMin =0.05;
             ScaleMax = 3;
 
 

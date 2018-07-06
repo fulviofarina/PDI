@@ -20,7 +20,7 @@ namespace PDIGenetic
         public override void SetPreprocess()
         {
 
-            if (util == null) util = new PDIGeneticUtil();
+            util = new PDIGeneticUtil();
 
 
             if (imagen != null)
@@ -117,15 +117,75 @@ namespace PDIGenetic
 
             d.ExternalDataObject = fitnessMatrix[1];
 
-            r.Fitness = (double)fitnessMatrix[0];
+           double fitness = (double)fitnessMatrix[0];
 
-            r.Genotype = Aid.SetStrings(r.GenesAsInts);
+                if (fitnessMatrix[2] != null)
+                {
+                    SystemException ex = fitnessMatrix[2] as SystemException;
+                    r.Okays = ex.Message + " - InnerEx - " + ex.InnerException.Message;
+                }
+                else
+                {
+                    r.Okays = string.Concat((fitnessMatrix[3] as decimal[]).SelectMany(o => o.ToString() + ","));
+                }
+
+
+                r.Genotype = Aid.SetStrings(r.GenesAsInts);
+                r.Fitness = fitness;
+
+                double comparableFitness = this.GARow.Fitness;
+
+
+
+
+                if (fitness > 0.505 && comparableFitness < fitness) 
+                {
+                    double readjustMin = 0.50;
+                    double readjustMax = 1.50;
+                  
+                    if (fitness > 0.535)
+                    {
+                         readjustMin = 0.75;
+                         readjustMax = 1.25;
+                    }
+
+
+                        if (fitness > 0.563)
+                    {
+                        readjustMin = 0.85;
+                        readjustMax = 1.15;
+                        this.util.InitialAngle = Convert.ToInt32((int)(genes[0].Value))-10;
+                        this.util.FinalAngle = Convert.ToInt32((int)(genes[0].Value))+10;
+
+                    }
+                    if (fitness > 0.567)
+                    {
+                        readjustMin = 0.95;
+                        readjustMax = 1.05;
+                        this.util.InitialAngle = Convert.ToInt32((int)(genes[0].Value)) - 5;
+                        this.util.FinalAngle = Convert.ToInt32((int)(genes[0].Value)) + 5;
+
+                    }
+
+                    this.util.MinTX = Convert.ToInt32((int)(genes[1].Value) *readjustMin);
+                    this.util.MinTY = Convert.ToInt32((int)(genes[2].Value) * readjustMin);
+                    this.util.MaxTX = Convert.ToInt32((int)(genes[1].Value) * readjustMax);
+                    this.util.MaxTY = Convert.ToInt32((int)(genes[2].Value) * readjustMax);
+
+                    this.util.ScaleMax = Convert.ToDouble((int)(genes[3].Value) * 0.01*readjustMax);
+                    this.util.ScaleMin= Convert.ToDouble((int)(genes[3].Value) *0.01* readjustMin);
+
+                   
+                }
+
+
+    
 
             }
             catch (Exception ex)
             {
+                r.Okays = ex.Message + " - InnerEx - " + ex.InnerException.Message;
 
-              
             }
 
 
@@ -136,7 +196,7 @@ namespace PDIGenetic
 
 
 
-            string title = "Resultado problema " + GARow.ProblemsRow.Label;
+            string title = "Resultado problema " + GARow.ProblemsRow.Label + " - " + GARow.ID;
 
 
             Img.Concatenate(title,ref all);
@@ -146,12 +206,16 @@ namespace PDIGenetic
 
         public override object[] FitnessRawEvaluator(bool isImgNull, ref Gene[] genesArray)
         {
-            double? lastBest = GA.BestChromosome?.Fitness;
+
+
+            object[] result = new object[4];
 
             int[] genes = genesArray.Select(o=> int.Parse(o.Value.ToString())).ToArray();
             double scalex, scaley;
             int tx, ty, angle;
             double skX, skY;
+
+
 
             extractGeneValues(ref genes, out scalex, out scaley, out tx, out ty, out angle,out skX, out skY);
 
@@ -163,24 +227,37 @@ namespace PDIGenetic
 
             if (ok)
             {
-                aux = (object[])imagen.PerformRotationCompare(angle, scalex, scaley, tx, ty, skX, skY);
+                aux = imagen.PerformRotationCompare(angle, scalex, scaley, tx, ty, skX, skY);
             }
-
-            if (aux != null)
+            int[] counts = null;
+            //check if no exception
+            if (aux!=null && aux[3] == null)
             {
-                int[] counts = (aux[1] as int[]);
-                double coeff = 1;
-          //      counts[3] = (int)1e5;
-               // counts[3] = ((Mat)imagen.UIOne.Mat).Height* ((Mat)imagen.UIOne.Mat).Width;
-                fitness = fitnessCalculation(ref counts, ref coeff);
-                if (aux[0] != null)
+                if (aux[0] != null) matriz = aux[0] as Mat;
+            
+                counts = (aux[1] as int[]);
+               int area = imagen.UITwo.Width * imagen.UITwo.Height;
+                //  int area = 250000;
+              //   double coeff = 0.25e-5;
+              double coeff = 1;
+                decimal[] countsAsDeciamals = convertCounts(ref counts, ref area);
+                //  fitness = fitnessCalculationOLD(ref counts, ref coeff);
+               fitness = fitnessCalculation(ref countsAsDeciamals, ref coeff);
+                if (matriz != null)
                 {
-                    matriz = aux[0] as Mat;
+                    double? lastBest = GA.BestChromosome?.Fitness;
                     keepMatrix(isImgNull, fitness, lastBest, ref matriz);
                 }
+                result[2] = aux[3]; //exception
+                result[3] = countsAsDeciamals;
             }
 
-            return new object[] { fitness, matriz};
+            result[0] = fitness;
+            result[1] = matriz;
+          
+            //new object[] { fitness, matriz, aux[3], counts }
+
+            return result;
         }
 
         private bool checkGenes(ref double scalex, ref double scaley, ref int tx, ref int ty, ref int angle, ref double skX, ref double skY)
@@ -202,38 +279,49 @@ namespace PDIGenetic
             return ok;
         }
 
-        private static double fitnessCalculation(ref int[] counts, ref double coeff)
+        private static double fitnessCalculation(ref decimal[] countDecimals, ref double coeff)
         {
             double fitness = 0;
-            coeff = 1e-5;
-            if (counts[0] != 0 && counts[1] != 0 && counts[2] != 0)
+          
+            for (int i = 0; i < countDecimals.Length; i++)
             {
-                fitness = (double)counts[0];
-                fitness += (double)counts[1];
-                fitness += (double)counts[2];
-                fitness += (double)counts[3];
-                fitness *= 0.25*coeff;
-                fitness += 1;
-                fitness = 1 / fitness;
-             // fitness = 1 - fitness;
+                fitness += (double)countDecimals[i];
             }
+                fitness *=coeff;
+                fitness +=0;
+                fitness = 1 / fitness;
+             //  fitness = 1 - fitness;
+         
          
             return fitness;
+        }
+        private static decimal[] convertCounts(ref int[] countsInts,ref int area)
+        {
+         
+            decimal[] newCounts = new decimal[countsInts.Length];
+            for (int i = 0; i < countsInts.Length; i++)
+            {
+                decimal cnt = Convert.ToDecimal((double)countsInts[i] / (double)area);
+                cnt = Decimal.Round(cnt, 3);
+                newCounts[i] = cnt;
+            }
+
+            return newCounts;
         }
         private static double fitnessCalculationOLD(ref int[] counts, ref double coeff)
         {
             double fitness = 0;
-            if (counts[0] != 0 && counts[1] != 0 && counts[2] != 0)
-            {
-                fitness = (double)counts[0] / (double)counts[3];
-                fitness += (double)counts[1] / (double)counts[3];
-                fitness += (double)counts[2] / (double)counts[3];
+         
+                fitness = (double)counts[0];
+                fitness += (double)counts[1] ;
+                fitness += (double)counts[2];
+                fitness += (double)counts[3];
 
                 fitness *= coeff;
                 fitness += 1;
                 fitness = 1 / fitness;
                 // fitness = 1 - fitness;
-            }
+          
 
             return fitness;
         }

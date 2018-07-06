@@ -110,7 +110,7 @@ namespace PDILib
             CvInvoke.PutText(im, texto, new Point(0, 50), Emgu.CV.CvEnum.FontFace.HersheyPlain, 3, font, 2);
             im = im.Resize(mat.Width / 3, mat.Height / 3, Emgu.CV.CvEnum.Inter.Cubic);
             byte[] b = im.ToJpegData();
-
+            o = im;
             mat?.Dispose();
             return b;
         }
@@ -131,7 +131,7 @@ namespace PDILib
         public static void Concatenate(string title, ref List<object> allImages)
         {
 
-            List<Image<Rgba, byte>> all = allImages.OfType< Image<Rgba, byte>>().ToList();
+            List<Image<Rgba, byte>> all = allImages.Cast< Image<Rgba, byte>>().ToList();
 
 
             List<Image<Rgba, byte>> newArr = new List<Image<Rgba, byte>>();
@@ -188,7 +188,10 @@ namespace PDILib
             {
                 current = current.Resize(0.60, Emgu.CV.CvEnum.Inter.Cubic);
 
-                CvInvoke.Imshow(title, current.Clone());
+                current.Save(title);
+
+                CvInvoke.Imshow(title, current);
+
 
                 current.Dispose();
             }
