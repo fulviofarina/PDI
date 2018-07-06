@@ -21,7 +21,7 @@ namespace PDILib
 
             Rgba black = new Rgba(0, 0, 0, 0);
             Rgba set = new Rgba(255, 255, 255, 0);
-            SwitchColor(ref Thres[channel],channel, black, set);
+            SwitchColor(ref Thres[channel], black, set);
 
           
         }
@@ -82,7 +82,7 @@ namespace PDILib
 
             result = input2.Sub(input).Not();
 
-            SwitchColor(ref result, channel, imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref result,  imgUtil.pitchWhite, imgUtil.pitchBlack);
 
             Divs[channel] = result.Convert<Rgb, byte>();
 

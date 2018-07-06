@@ -38,6 +38,14 @@ namespace PDILib
                 .SmoothGaussian(1);
 
 
+            
+            //    SwitchColor(ref UITwo, imgUtil.pitchBlack, imgUtil.pitchWhite);
+              //  SwitchColor(ref UIOne,  imgUtil.pitchBlack, imgUtil.pitchWhite);
+
+            
+
+
+
 
 
             int j = 0;
@@ -52,12 +60,12 @@ namespace PDILib
 
             secondExpansion(j);
 
-            SwitchColor(ref imgUtil.expandedTwo[1], 0, imgUtil.pitchWhite, imgUtil.pitchBlack);
-            SwitchColor(ref imgUtil.expandedTwo[0], 0, imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedTwo[1],  imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedTwo[0],imgUtil.pitchWhite, imgUtil.pitchBlack);
 
 
-            SwitchColor(ref imgUtil.expandedOne[1], 0, imgUtil.pitchWhite, imgUtil.pitchBlack);
-            SwitchColor(ref imgUtil.expandedOne[0], 0, imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedOne[1],  imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedOne[0],  imgUtil.pitchWhite, imgUtil.pitchBlack);
 
         }
 
@@ -124,15 +132,16 @@ namespace PDILib
       
         public Point GetMiddlePointCanvas(double radiusTestCanvas, ref Image<Rgba, byte> actual)
         {
-            imgUtil.TX = (int)radiusTestCanvas;
-            imgUtil.TY = (int)radiusTestCanvas;
+          
             Point middle;
-            int originx;
-            originx = (2 * imgUtil.TX) - actual.Width;
-            originx /= 2;
-            int originy = (2 * imgUtil.TY) - actual.Height;
-            originy /= 2;
-            middle = new Point(originx, originy);
+            double originx;
+            originx = (2* radiusTestCanvas) - actual.Width;
+            //  originx = (2 * radiusTestCanvas) - actual.Width;
+              originx /= 2;
+            double originy;
+            originy = (2 * radiusTestCanvas) - actual.Height;
+           originy /= 2;
+            middle = new Point(Convert.ToInt32(originx),Convert.ToInt32( originy));
             return middle;
         }
 

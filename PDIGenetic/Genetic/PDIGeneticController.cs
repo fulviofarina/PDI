@@ -37,9 +37,9 @@ namespace PDIGenetic
             imagen.GetImgToCompare(data.Label3, 4);
 
             Img.DisposeArrayOfImages(ref all);
-            all = new List<Image<Rgba, byte>>();
+            all = new List<object>();
 
-            horizontalCounter = 1;
+           // horizontalCounter = 1;
 
         }
 
@@ -48,8 +48,8 @@ namespace PDIGenetic
         private Img imagen;
 
 
-        private List<Image<Rgba, byte>> all;
-        private   int horizontalCounter;
+        private List<object> all;
+      //  private   int horizontalCounter;
      
 
         public override void GACompleted<T>(ref GADataSet.SolutionsRow r, ref T s)
@@ -67,7 +67,7 @@ namespace PDIGenetic
 
             GADataSet.DataRow aux = r.DataAxuliar.FirstOrDefault();
 
-            Mat mat = aux.ExternalDataObject as Mat;
+           
                 //  Bitmap b = mat.Bitmap;
                 //  escaledUI = original.Resize(w / scale, h / scale, Emgu.CV.CvEnum.Inter.LinearExact, true);
 
@@ -76,19 +76,15 @@ namespace PDIGenetic
                 if (ok)
             {
 
-                    Image<Rgba, byte> im = mat.ToImage<Rgba, byte>();
+                    object o = aux.ExternalDataObject;
                     string texto = r.Genotype + " F=" + Decimal.Round(Convert.ToDecimal(r.Fitness), 2).ToString();
-                    MCvScalar font = new MCvScalar(255, 255, 0, 0);
-                    CvInvoke.PutText(im, texto, new Point(0, 50), Emgu.CV.CvEnum.FontFace.HersheyPlain, 3, font, 2);
-                  
-                    r.Chromosome = im.ToJpegData();
+                    r.Chromosome = Img.ExtractImage(ref o, texto);
 
-                    im = im.Resize(mat.Width / 3, mat.Height / 3, Emgu.CV.CvEnum.Inter.Cubic);
+                    all.Add(o);
 
-                    all.Add(im);
                  //   im.Dispose();
             }
-            mat?.Dispose();
+          
                 //mat.ToImage<Rgba,byte>().ToJpegData();
             }
             catch (Exception ex)
@@ -112,7 +108,10 @@ namespace PDIGenetic
 
             GADataSet.DataRow d = r.DataAxuliar.NewDataRow();
             r.DataAxuliar.AddDataRow(d);
+            try
+            {
 
+          
             Gene[] genes = r.Genes;
             object[] fitnessMatrix = FitnessRawEvaluator(r.IsChromosomeNull(), ref genes);
 
@@ -121,66 +120,26 @@ namespace PDIGenetic
             r.Fitness = (double)fitnessMatrix[0];
 
             r.Genotype = Aid.SetStrings(r.GenesAsInts);
-         
+
+            }
+            catch (Exception ex)
+            {
+
+              
+            }
 
 
         }
 
         public override void GAFinalize()
         {
-            List<Image<Rgba, byte>> newArr = new List<Image<Rgba, byte>>();
-            Image<Rgba, byte> current=null;
 
-            int changeEvery = 3;
-            horizontalCounter = 1;
 
-            foreach (var item in all)
-            {
-                if (current == null)
-                {
-                    current = item;
-                }
-                else
-                {
-                    if (horizontalCounter <= changeEvery)
-                    {
-                        current = current.ConcateHorizontal(item);
-                        horizontalCounter++;
-                        if (horizontalCounter == changeEvery+1)
-                        {
-                            horizontalCounter = 1;
-                            newArr.Add(current.Clone());
-                            current = null;
-                        }
-                  
-                    }
-                   
-                }
-            }
 
-            
+            string title = "Resultado problema " + GARow.ProblemsRow.Label;
 
-            foreach (var item in newArr)
-            {
-                if (current == null)
-                {
-                    current = item;
-                }
-                else
-                {
-                        current = current.ConcateVertical(item);
-                }
-            }
 
-            Img.DisposeArrayOfImages(ref all);
-
-            current = current.Resize(0.60, Emgu.CV.CvEnum.Inter.Cubic);
-
-            CvInvoke.Imshow("Resultado problema " + GARow.ProblemsRow.Label , current.Clone());
-
-            current.Dispose();
-         
-            Img.DisposeArrayOfImages(ref newArr);
+            Img.Concatenate(title,ref all);
 
             //CvInvoke.WaitKey();
         }
@@ -197,7 +156,7 @@ namespace PDIGenetic
             extractGeneValues(ref genes, out scalex, out scaley, out tx, out ty, out angle,out skX, out skY);
 
             double fitness = 0;
-            GpuMat matriz = null;
+            Mat matriz = null;
 
             object[] aux = null;
             bool ok = checkGenes(ref scalex, ref scaley, ref tx, ref ty, ref angle, ref skX, ref skY);
@@ -214,10 +173,11 @@ namespace PDIGenetic
           //      counts[3] = (int)1e5;
                // counts[3] = ((Mat)imagen.UIOne.Mat).Height* ((Mat)imagen.UIOne.Mat).Width;
                 fitness = fitnessCalculation(ref counts, ref coeff);
-
-                matriz = aux[0] as GpuMat;
-                keepMatrix(isImgNull, fitness, lastBest, ref matriz);
-
+                if (aux[0] != null)
+                {
+                    matriz = aux[0] as Mat;
+                    keepMatrix(isImgNull, fitness, lastBest, ref matriz);
+                }
             }
 
             return new object[] { fitness, matriz};
@@ -245,6 +205,24 @@ namespace PDIGenetic
         private static double fitnessCalculation(ref int[] counts, ref double coeff)
         {
             double fitness = 0;
+            coeff = 1e-5;
+            if (counts[0] != 0 && counts[1] != 0 && counts[2] != 0)
+            {
+                fitness = (double)counts[0];
+                fitness += (double)counts[1];
+                fitness += (double)counts[2];
+                fitness += (double)counts[3];
+                fitness *= 0.25*coeff;
+                fitness += 1;
+                fitness = 1 / fitness;
+             // fitness = 1 - fitness;
+            }
+         
+            return fitness;
+        }
+        private static double fitnessCalculationOLD(ref int[] counts, ref double coeff)
+        {
+            double fitness = 0;
             if (counts[0] != 0 && counts[1] != 0 && counts[2] != 0)
             {
                 fitness = (double)counts[0] / (double)counts[3];
@@ -254,8 +232,9 @@ namespace PDIGenetic
                 fitness *= coeff;
                 fitness += 1;
                 fitness = 1 / fitness;
+                // fitness = 1 - fitness;
             }
-     //      fitness = 1 - fitness;
+
             return fitness;
         }
 
@@ -307,7 +286,7 @@ namespace PDIGenetic
         /// <param name="fitness"></param>
         /// <param name="latestBest"></param>
         /// <param name="matriz"></param>
-        private static void keepMatrix(bool isNullChromosome,  double fitness, double? latestBest, ref GpuMat matriz)
+        private static void keepMatrix(bool isNullChromosome,  double fitness, double? latestBest, ref Mat matriz)
         {
             bool killImage = false;
 

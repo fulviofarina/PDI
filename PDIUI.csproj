@@ -8,9 +8,10 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>PDIUI</RootNamespace>
     <AssemblyName>PDIUI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,21 +53,17 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2017, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PDILib\Emgu.CV.DebuggerVisualizers.VS2017.dll</HintPath>
+    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2017">
+      <HintPath>..\libEmgu\Emgu.CV.DebuggerVisualizers.VS2017.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PDILib\Emgu.CV.UI.dll</HintPath>
+    <Reference Include="Emgu.CV.UI">
+      <HintPath>..\libEmgu\Emgu.CV.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI.GL, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PDILib\Emgu.CV.UI.GL.dll</HintPath>
+    <Reference Include="Emgu.CV.UI.GL">
+      <HintPath>..\libEmgu\Emgu.CV.UI.GL.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.World, Version=3.4.1.2976, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PDILib\Emgu.CV.World.dll</HintPath>
+    <Reference Include="Emgu.CV.World">
+      <HintPath>..\libEmgu\Emgu.CV.World.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -81,7 +78,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ZedGraph">
-      <HintPath>..\PDILib\ZedGraph.dll</HintPath>
+      <HintPath>..\libEmgu\ZedGraph.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -124,27 +121,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PDILib\PDILib.csproj">
+    <ProjectReference Include="PDILib\PDILib.csproj">
       <Project>{fed7d3aa-788e-47b9-ab4f-f77edeffa3c5}</Project>
       <Name>PDILib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="concrt140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="cvextern.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="msvcp140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="opencv_ffmpeg341.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="vcruntime140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

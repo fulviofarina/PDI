@@ -21,9 +21,9 @@ namespace PDILib
         {
             Image<Rgba, byte> bigger = one;
             Image<Rgba, byte> smaller = two;
-         //   bool lessW = (bigger.Width * bigger.Height) < (smaller.Width * smaller.Height);
-            bool lessW = bigger.Width < smaller.Width;
-            lessW = lessW && bigger.Height < smaller.Height;
+            bool lessW = (bigger.Width * bigger.Height) < (smaller.Width * smaller.Height);
+         //   bool lessW = bigger.Width < smaller.Width;
+          //  lessW = lessW && bigger.Height < smaller.Height;
             if (lessW)
             {
                 bigger = two;
@@ -32,7 +32,28 @@ namespace PDILib
 
             return new Image<Rgba, byte>[] { bigger, smaller };
         }
+        public static int GetBiggerWidth(ref Image<Rgba, byte> one, ref Image<Rgba, byte> two)
+        {
+            int width = one.Width;
+            bool lessW = (one.Width) < (two.Width);
+            if (lessW)
+            {
+                width = two.Width;
+            }
 
+            return width;
+        }
+        public static int GetBiggerHeight(ref Image<Rgba, byte> one, ref Image<Rgba, byte> two)
+        {
+            int Height = one.Height;
+            bool lessW = (one.Height) < (two.Height);
+            if (lessW)
+            {
+                Height = two.Height;
+            }
+
+            return Height;
+        }
 
         public static Rgba PureColor(int index, double valueToSet)
         {
@@ -62,10 +83,13 @@ namespace PDILib
             text += "\tDiff: " + angle.ToString();
             text += "\n";
         }
-        public static void DisposeArrayOfImages(ref List<Image<Rgba, byte>> all)
+        public static void DisposeArrayOfImages(ref List<object> alles)
         {
-            if (all != null)
+
+          
+            if (alles != null)
             {
+                List<Image<Rgba, byte>> all = alles.OfType<Image<Rgba, byte>>().ToList();
                 foreach (var item in all)
                 {
                     item.Dispose();
@@ -97,7 +121,7 @@ namespace PDILib
             destiny.ROI = Rectangle.Empty;
         }
 
-        public static void SwitchColor(ref Image<Rgba,byte> source, int channel, Rgba compare, Rgba set)
+        public static void SwitchColor(ref Image<Rgba,byte> source, Rgba compare, Rgba set)
         {
             for (int x = 0; x < source.Height; x++)
             {

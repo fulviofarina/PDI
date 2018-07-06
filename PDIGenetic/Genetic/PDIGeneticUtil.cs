@@ -24,15 +24,22 @@ namespace PDIGenetic
       
         public void SetStandard()
         {
-            MinTX = -200;
-            MinTY = -200;
-            MaxTX = -1 * MinTX;
-            MaxTY = -1 * MinTY;
+            MinTX = 0;
+            MinTY = 0;
+            MaxTX = 300;
+            MaxTY = 300;
 
-            ScaleMin = 0.3;
+            ScaleMin =0.1;
             ScaleMax = 3;
+
+
+            //   ScaleMin = 0.3;
+            //  ScaleMax = 3;
+           // InitialAngle = 0;
+          //  FinalAngle = 360;
+
             InitialAngle = -180;
-            FinalAngle = 180;
+            FinalAngle =180;
             ShearMax = 1;
             ShearMin = 0;
         }
