@@ -2,13 +2,16 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="PDILib.Detector">
     <Position X="8" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AMjUAIAYEKphLUAEAHyAACiciWIhIATBBFAgAAEgBkA=</HashCode>
       <FileName>Detector\Detector.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="PDILib.DrawMatches" Collapsed="true">
-    <Position X="11.75" Y="3.5" Width="1.5" />
+  <Class Name="PDILib.DrawMatches">
+    <Position X="2.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DrawMatches.cs</FileName>
@@ -16,6 +19,9 @@
   </Class>
   <Class Name="PDILib.Img">
     <Position X="5" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <NestedTypes>
       <Class Name="PDILib.Img.Fourier" Collapsed="true">
         <TypeIdentifier>
@@ -24,7 +30,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>JAQWBIIhASCCEgAIkgQCCEIEAkAAEFEgggghAIhCsAY=</HashCode>
+      <HashCode>LAQWBIohASCCMgAI0gQCSMIEAkgAEFUgggghgIhSsAY=</HashCode>
       <FileName>Img\Basic.cs</FileName>
     </TypeIdentifier>
   </Class>

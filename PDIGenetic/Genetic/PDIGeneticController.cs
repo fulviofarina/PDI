@@ -14,42 +14,52 @@ namespace PDIGenetic
 {
     public partial class PDIGeneticController : ControllerBase, IController
     {
-        private  PDIGeneticUtil util;
       
-
         public override void SetPreprocess()
         {
 
             util = new PDIGeneticUtil();
 
 
-            if (imagen != null)
+            if (imagen != null) //imagen = new Img();
             {
-                imagen.Dispose();
+                      imagen.Dispose();
             }
-            imagen = new Img();
+                 imagen = new Img();
 
+            repairCounter = 0;
 
             GADataSet.DataRow[] datas = (GADataSet.DataRow[])ProblemData;
             GADataSet.DataRow data = datas.FirstOrDefault(o => o.ProblemID == this.PROBLEMID);
             imagen.path = data.Label1;
-            imagen.GetImg(data.Label2, 4);
-            imagen.GetImgToCompare(data.Label3, 4);
+
+            int scale = 6;
+            imagen.GetImg(data.Label2, scale);
+            imagen.GetImgToCompare(data.Label3, scale);
+
+
+            //     CvInvoke.DetailEnhance(imagen.UIOne.Mat, imagen.UIOne.Mat);
+            //    CvInvoke.DetailEnhance(imagen.UITwo.Mat, imagen.UITwo.Mat);
+            imagen.UITwo.CountNonzero();
+            Image<Rgba, byte> uno = imagen.UIOne;
+            Image<Rgba, byte> dos = imagen.UITwo;
+
+
+            CvInvoke.Imshow("ONE", uno);
+            CvInvoke.Imshow("TWO", dos);
+ 
+            double cm =   imagen.OneMoments[0].GetCentralMoment(1,1);
+            double sm = imagen.OneMoments[0].GetSpatialMoment(1, 1);
+
+
 
             Img.DisposeArrayOfImages(ref all);
             all = new List<object>();
 
-           // horizontalCounter = 1;
+            // horizontalCounter = 1;
 
         }
 
-       
-
-        private Img imagen;
-
-
-        private List<object> all;
-      //  private   int horizontalCounter;
      
 
         public override void GACompleted<T>(ref GADataSet.SolutionsRow r, ref T s)
@@ -98,12 +108,34 @@ namespace PDIGenetic
 
 
         }
+
+        //  private double lastBest;
+        //   private int StagnationCounter = 0;
+        public IChromosome specificAdam;
+
+        public override IChromosome GenerateAdamFromStrings(ref string[] genes)
+        {
+            specificAdam = CreateChromosome();
+
+            if (genes != null)
+            {
+                List<Gene> genesInts = new List<Gene>();
+                foreach (var item in genes)
+                {
+                    genesInts.Add(new Gene(Convert.ToInt32(item)));
+                }
+
+
+                specificAdam.ReplaceGenes(0, genesInts.ToArray());
+            }
+            return specificAdam;
+        }
         /// <summary>
         /// BASIC CALCULATION NECESSARY FOR FITNESS
         /// </summary>
         /// <param name="r"></param>
         /// <param name="c"></param>
-        public override void GenerationRan(ref GADataSet.SolutionsRow r)
+        public override void GenerationRan(ref GADataSet.SolutionsRow r, ref IChromosome chromosome)
         {
 
             GADataSet.DataRow d = r.DataAxuliar.NewDataRow();
@@ -111,130 +143,210 @@ namespace PDIGenetic
             try
             {
 
-          
-            Gene[] genes = r.Genes;
-            object[] fitnessMatrix = FitnessRawEvaluator(r.IsChromosomeNull(), ref genes);
+             
 
-            d.ExternalDataObject = fitnessMatrix[1];
-
-           double fitness = (double)fitnessMatrix[0];
-
-                if (fitnessMatrix[2] != null)
+                Gene[] genes = chromosome.GetGenes();
+                object[] fitnessMatrixCounts = FitnessRawEvaluator(r.IsChromosomeNull(),ref chromosome);
+                //matrix aqui
+              
+                d.ExternalDataObject = fitnessMatrixCounts[1];
+                //fitness aqui
+                double fitness = (double)fitnessMatrixCounts[0];
+                r.Fitness = fitness;
+                if (fitnessMatrixCounts[2] != null)
                 {
-                    SystemException ex = fitnessMatrix[2] as SystemException;
+                    SystemException ex = fitnessMatrixCounts[2] as SystemException;
                     r.Okays = ex.Message + " - InnerEx - " + ex.InnerException.Message;
                 }
                 else
                 {
-                    r.Okays = string.Concat((fitnessMatrix[3] as decimal[]).SelectMany(o => o.ToString() + ","));
+                    decimal[] counts = fitnessMatrixCounts[3] as decimal[];
+                    if (counts != null)
+                    {
+                        r.Okays = string.Concat(counts.SelectMany(o => Decimal.Round(o, 2).ToString() + ","));
+                    }
                 }
-
-
-                r.Genotype = Aid.SetStrings(r.GenesAsInts);
-                r.Fitness = fitness;
-
+                r.Genotype = Aid.SetStrings(r.GenesAsInts, " | ", 0, "0");
                 double comparableFitness = this.GARow.Fitness;
+               this.util.readjustSearchSpace(ref genes, fitness, comparableFitness);
 
 
+               if (GA.GenerationsNumber == 20)
+               {
+                  // GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
+                    //
+                   GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
 
+                   // GA.Population.CreateNewGeneration(GA.Population.CurrentGeneration.Chromosomes);
+                    
+                    //   GA.Crossover.Cross(GA.Population.CurrentGeneration.Chromosomes);
+                  //  GA.BestChromosome.Fitness = specificAdam.Fitness;
+                  //  GA.Population.CurrentGeneration.BestChromosome.ReplaceGenes(0,specificAdam.GetGenes());
 
-                if (fitness > 0.505 && comparableFitness < fitness) 
-                {
-                    double readjustMin = 0.50;
-                    double readjustMax = 1.50;
-                  
-                    if (fitness > 0.535)
-                    {
-                         readjustMin = 0.75;
-                         readjustMax = 1.25;
-                    }
-
-
-                        if (fitness > 0.563)
-                    {
-                        readjustMin = 0.85;
-                        readjustMax = 1.15;
-                        this.util.InitialAngle = Convert.ToInt32((int)(genes[0].Value))-10;
-                        this.util.FinalAngle = Convert.ToInt32((int)(genes[0].Value))+10;
-
-                    }
-                    if (fitness > 0.567)
-                    {
-                        readjustMin = 0.95;
-                        readjustMax = 1.05;
-                        this.util.InitialAngle = Convert.ToInt32((int)(genes[0].Value)) - 5;
-                        this.util.FinalAngle = Convert.ToInt32((int)(genes[0].Value)) + 5;
-
-                    }
-
-                    this.util.MinTX = Convert.ToInt32((int)(genes[1].Value) *readjustMin);
-                    this.util.MinTY = Convert.ToInt32((int)(genes[2].Value) * readjustMin);
-                    this.util.MaxTX = Convert.ToInt32((int)(genes[1].Value) * readjustMax);
-                    this.util.MaxTY = Convert.ToInt32((int)(genes[2].Value) * readjustMax);
-
-                    this.util.ScaleMax = Convert.ToDouble((int)(genes[3].Value) * 0.01*readjustMax);
-                    this.util.ScaleMin= Convert.ToDouble((int)(genes[3].Value) *0.01* readjustMin);
-
-                   
+                    //
+                    //   GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
+                    //Add(specificAdam);
+                    //    GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
+                    //  chromosome.ReplaceGenes(0, specificAdam.GetGenes());
+                    //     chromosome.Fitness = specificAdam.Fitness;
+                    //   chromosome = specificAdam;
                 }
-
-
-    
 
             }
             catch (Exception ex)
             {
-                r.Okays = ex.Message + " - InnerEx - " + ex.InnerException.Message;
+                r.Okays = ex.Message + " - InnerEx - ";// + ex.InnerException?.Message;
 
             }
 
 
         }
 
-        public override void GAFinalize()
+       public override void GAFinalize()
         {
-
-
-
             string title = "Resultado problema " + GARow.ProblemsRow.Label + " - " + GARow.ID;
-
-
-            Img.Concatenate(title,ref all);
-
+            Img.Concatenate(title,ref all, imagen.path + "\\");
             //CvInvoke.WaitKey();
         }
 
-        public override object[] FitnessRawEvaluator(bool isImgNull, ref Gene[] genesArray)
+
+        private int repairCounter = 0;
+
+        public override object[] FitnessRawEvaluator(bool isImgNull, ref IChromosome chromosome)
         {
 
+             Gene[] genesArray = chromosome?.GetGenes();
+            /*
+         
+            double? lastnown = GA?.BestChromosome?.Fitness;
+            if (lastnown != null && lastnown <= lastBest)
+            {
+                StagnationCounter++;
+               
+            }
+            else if (lastnown != null)
+            {
+                lastBest = (double)lastnown;
+                StagnationCounter = 0;
+            }
 
-            object[] result = new object[4];
 
+
+            int rotNew = (int)genesArray[0].Value;
+            int rotOld = rotNew;
+            bool changeGene = false;
+
+
+            if (StagnationCounter > 200)
+            {
+                if (rotNew < 0) rotNew += 180;
+                else rotNew -= 180;
+                changeGene = true;
+            }
+            else if (StagnationCounter > 100)
+            {
+                if (rotNew < 0) rotNew += 90;
+                else rotNew -= 90;
+                changeGene = true;
+            }
+
+            if (changeGene)
+            {
+                genesArray[0] = new Gene(rotNew);
+            }
+
+          */
+          /*
+
+            int rotNew = (int)genesArray[0].Value;
+            int rotOld = rotNew;
+           
+            if ((double)rotNew == lastBest)
+            {
+                StagnationCounter++;
+
+            }
+            else 
+            {
+                lastBest = rotNew;
+                StagnationCounter = 0;
+            }
+
+
+            if (StagnationCounter >20)
+            {
+                GA.Mutation.Mutate(chromosome, 0.5f);
+           
+               
+            }
+            else if (StagnationCounter > 10)
+            {
+                GA.Mutation.Mutate(chromosome, 0.5f);
+            
+            }
+
+          */
+
+
+
+        
+            double fitness = 0;
+            Mat matriz = null;
+            object[] result = null;
+            if (genesArray == null)
+            {
+                result = new object[] { fitness,matriz};
+                return result;
+            }
+
+            result = new object[4];
             int[] genes = genesArray.Select(o=> int.Parse(o.Value.ToString())).ToArray();
             double scalex, scaley;
             int tx, ty, angle;
             double skX, skY;
-
-
+            double repairFactor = 0.95;
 
             extractGeneValues(ref genes, out scalex, out scaley, out tx, out ty, out angle,out skX, out skY);
 
-            double fitness = 0;
-            Mat matriz = null;
+          
 
             object[] aux = null;
             bool ok = checkGenes(ref scalex, ref scaley, ref tx, ref ty, ref angle, ref skX, ref skY);
 
             if (ok)
             {
-                aux = imagen.PerformRotationCompare(angle, scalex, scaley, tx, ty, skX, skY);
+                aux = imagen.PerformRotationCompare(angle, scalex, scaley, ref tx,ref ty, skX, skY, repairFactor);
             }
             int[] counts = null;
             //check if no exception
             if (aux!=null && aux[3] == null)
             {
                 if (aux[0] != null) matriz = aux[0] as Mat;
-            
+                bool repairTx = (bool)aux[4];
+                bool repairTy = (bool)aux[5];
+
+                if (repairTx)
+                {
+                    chromosome.ReplaceGene(1, new Gene(tx));
+                    repairCounter++;
+                    if (repairCounter == 5)
+                    {
+                      //  this.util.MaxTX = Convert.ToInt32(this.util.MaxTX * repairFactor);
+                        repairCounter = 0;
+                    }
+                }
+
+                if (repairTy)
+                {
+                    chromosome.ReplaceGene(2, new Gene(ty));
+                    repairCounter++;
+                    if (repairCounter == 5)
+                    {
+                       // this.util.MaxTY = Convert.ToInt32(this.util.MaxTY * repairFactor);
+                        repairCounter = 0;
+                    }
+                }
+
                 counts = (aux[1] as int[]);
                int area = imagen.UITwo.Width * imagen.UITwo.Height;
                 //  int area = 250000;
@@ -260,145 +372,7 @@ namespace PDIGenetic
             return result;
         }
 
-        private bool checkGenes(ref double scalex, ref double scaley, ref int tx, ref int ty, ref int angle, ref double skX, ref double skY)
-        {
-            bool ok = angle <= this.util.FinalAngle;
-            ok = ok && angle >= this.util.InitialAngle;
-            ok = ok && tx >= this.util.MinTX;
-            ok = ok && tx <= this.util.MaxTX;
-            ok = ok && ty >= this.util.MinTY;
-            ok = ok && ty <= this.util.MaxTY;
-            ok = ok && scalex >= this.util.ScaleMin;
-            ok = ok && scalex <= this.util.ScaleMax;
-            ok = ok && scaley >= this.util.ScaleMin;
-            ok = ok && scaley <= this.util.ScaleMax;
-            ok = ok && skX >= this.util.ShearMin;
-            ok = ok && skX <= this.util.ShearMax;
-            ok = ok && skY >= this.util.ShearMin;
-            ok = ok && skY <= this.util.ShearMax;
-            return ok;
-        }
-
-        private static double fitnessCalculation(ref decimal[] countDecimals, ref double coeff)
-        {
-            double fitness = 0;
-          
-            for (int i = 0; i < countDecimals.Length; i++)
-            {
-                fitness += (double)countDecimals[i];
-            }
-                fitness *=coeff;
-                fitness +=0;
-                fitness = 1 / fitness;
-             //  fitness = 1 - fitness;
-         
-         
-            return fitness;
-        }
-        private static decimal[] convertCounts(ref int[] countsInts,ref int area)
-        {
-         
-            decimal[] newCounts = new decimal[countsInts.Length];
-            for (int i = 0; i < countsInts.Length; i++)
-            {
-                decimal cnt = Convert.ToDecimal((double)countsInts[i] / (double)area);
-                cnt = Decimal.Round(cnt, 3);
-                newCounts[i] = cnt;
-            }
-
-            return newCounts;
-        }
-        private static double fitnessCalculationOLD(ref int[] counts, ref double coeff)
-        {
-            double fitness = 0;
-         
-                fitness = (double)counts[0];
-                fitness += (double)counts[1] ;
-                fitness += (double)counts[2];
-                fitness += (double)counts[3];
-
-                fitness *= coeff;
-                fitness += 1;
-                fitness = 1 / fitness;
-                // fitness = 1 - fitness;
-          
-
-            return fitness;
-        }
-
-        private static void extractGeneValues(ref int[] genes, out double scalex, out double scaley, out int tx, out int ty, out int angle, out double skX, out double skY)
-        {
-            scalex = 1;
-            scaley = 1;
-            tx = 0;
-            ty = 0;
-            skX = 0;
-            skY = 0;
-
-            if (genes.Count() > 1)
-            {
-                tx = (genes[1]);
-               
-            }
-            if (genes.Count() > 2)
-            {
-                ty = (genes[2]);
-            }
-                if (genes.Count() > 3)
-            {
-                scalex = (double)(genes[3])/100;
-              
-            }
-            if (genes.Count() > 4)
-            {
-               
-                scaley = (double)(genes[4]) / 100;
-            }
-            if (genes.Count() > 5)
-            {
-
-                skX = (double)(genes[5]) / 100;
-            }
-            if (genes.Count() > 6)
-            {
-
-                skY = (double)(genes[6]) / 100;
-            }
-            angle = genes[0];
-        }
-
-        /// <summary>
-        ///  Only keep the best fitness image
-        /// </summary>
-        /// <param name="isNullChromosome"></param>
-        /// <param name="fitness"></param>
-        /// <param name="latestBest"></param>
-        /// <param name="matriz"></param>
-        private static void keepMatrix(bool isNullChromosome,  double fitness, double? latestBest, ref Mat matriz)
-        {
-            bool killImage = false;
-
-            if (latestBest != null)
-            {
-
-                if (latestBest >= fitness)
-                {
-                    if (latestBest == fitness)
-                    {
-                        if (!isNullChromosome) killImage = true;
-                    }
-                    else killImage = true;
-                }
-            }
-           
-            if (killImage)
-            {
-                matriz?.Dispose();
-                matriz = null;
-            }
-           
-        }
-
+     
         /// <summary>
         /// POST CALCULATION TO DECODE
         /// </summary>

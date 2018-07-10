@@ -128,7 +128,7 @@ namespace PDILib
             bool okGPU = CvInvoke.HaveOpenCLCompatibleGpuDevice;
         }
 
-        public static void Concatenate(string title, ref List<object> allImages)
+        public static void Concatenate(string title, ref List<object> allImages, string path, string ext = ".jpg")
         {
 
             List<Image<Rgba, byte>> all = allImages.Cast< Image<Rgba, byte>>().ToList();
@@ -138,9 +138,14 @@ namespace PDILib
             Image<Rgba, byte> current = null;
 
 
+         
+            int changeEvery = 4;
+            int takeSize = changeEvery* changeEvery;
 
-            int changeEvery = 3;
-             int  horizontalCounter = 1;
+            int  horizontalCounter = 1;
+
+            int collageZounter = 1;
+            
 
             foreach (var item in all)
             {
@@ -154,19 +159,20 @@ namespace PDILib
                     {
                         current = current.ConcateHorizontal(item);
                         horizontalCounter++;
-                        if (horizontalCounter == changeEvery + 1)
+                        if (horizontalCounter == changeEvery + 1 || item.Equals(all.Last()))
                         {
                             horizontalCounter = 1;
                             newArr.Add(current.Clone());
                             current = null;
                         }
 
+
                     }
 
                 }
             }
 
-
+            int verticalCounter = 1;
 
             foreach (var item in newArr)
             {
@@ -176,26 +182,31 @@ namespace PDILib
                 }
                 else
                 {
-                    current = current.ConcateVertical(item);
+                    if (verticalCounter <= changeEvery)
+                    {
+                        current = current.ConcateVertical(item);
+                        verticalCounter++;
+                        if (verticalCounter == changeEvery + 1 || item.Equals(newArr.Last()))
+                        {
+                            verticalCounter = 1;
+
+                            current = current.Resize(0.60, Emgu.CV.CvEnum.Inter.Linear);
+
+                            string fullTitle = title + " - " + collageZounter.ToString();
+                            current.Bitmap.Save(path+ fullTitle + ext);
+
+                            CvInvoke.Imshow(fullTitle, current);
+                            collageZounter++;
+                            current.Dispose();
+                            current = null;
+                        }
+
+                    }
+
+                 
                 }
             }
 
-
-
-
-
-            if (current != null)
-            {
-                current = current.Resize(0.60, Emgu.CV.CvEnum.Inter.Cubic);
-
-                current.Save(title);
-
-                CvInvoke.Imshow(title, current);
-
-
-                current.Dispose();
-            }
-         
 
             Img.DisposeArrayOfImages(ref allImages);
 

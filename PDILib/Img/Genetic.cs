@@ -3,6 +3,7 @@ using Emgu.CV.Structure;
 using System;
 using System.Drawing;
 using Emgu.CV.Cuda;
+using System.Collections.Generic;
 
 namespace PDILib
 {
@@ -144,113 +145,126 @@ namespace PDILib
             return array;
         }
 
-        public object[] PerformRotationCompare(double angulo, double scalex, double scaley, int tx, int ty, double skX = 0, double skY = 0)
+        public object[] PerformRotationCompare(double angulo, double scalex, double scaley, ref int tx, ref int ty, double skX = 0, double skY = 0, double repairFactor=0.95)
         {
 
             SystemException exception = null;
             Image<Rgba, byte> two = null;
             Image<Rgba, byte> one = null;
             Mat resultMat=null;
-
-            Mat destiny = null;
+            Image<Rgba, byte> canvas = null;
+           Mat destiny = null;
             Mat compare = null;
-            object[] array =new object[4] ;
+            object[] array =new object[6] ;
             double raidus = 0;
-         
+         //   MCvMoments onemoment;
+         //   MCvMoments twomoment;
+            int width = 0;
+            int height = 0;
+        
+            bool repairTX = false;
+            bool repairTY = false;
+            try
+            {
+
+
+
+                two = UITwo;
+                one = this.imgUtil.expandedOne[0];
+
+                performRotateScale(angulo, scalex, scaley, ref one);
+                performSkew(skX, skY, ref one);
+
+
+            }
+
+            catch (Exception ex)
+            {
+
+                exception = new SystemException(ex.Message + " at Module#1.1");
+            }
+
+    try
+            {
+
+
+                if (exception != null) throw new Exception(exception.Message);
+
+                //determine bigger between one and two
+                width = GetBiggerWidth(ref two, ref one);
+                height = GetBiggerHeight(ref two, ref one);
+                canvas = new Image<Rgba, byte>(width, height, imgUtil.pitchBlack);
+                //make canvas from bigger and copy the smaller into this canvas
+                canvas = MakeCanvas(ref canvas, out raidus);
+
+            
+            }
+            catch (Exception ex)
+            {
+
+                exception = new SystemException(ex.Message + " at Module#1.2");
+            }
 
             try
             {
 
 
-                //VOLVI A CAMBIARLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO////////////////////////
-                // one = imgUtil.expandedOne[0];
-                //  one = imgUtil.expandedOne[0];
-                  two = UITwo;
-              one = UIOne;
+                if (exception != null) throw new Exception(exception.Message);
 
-                performRotateScale(angulo, scalex, scaley, ref  one);
-                performSkew(skX, skY, ref one);
+                two = canvas.CopyBlank();
 
-
-                //determine bigger between one and two
-                int width = GetBiggerWidth(ref two, ref one);
-                int height = GetBiggerHeight(ref two, ref one);
-
-                Image<Rgba, byte> canvas = new Image<Rgba, byte>(width, height, imgUtil.pitchBlack);
-              //  Image<Rgba, byte>[] biggerSmaller = GetBiggerSmallerImages(ref UITwo, ref one);
-
-                //make canvas from bigger and copy the smaller into this canvas
-                //int area = (biggerSmaller[0]).Height * (biggerSmaller[0]).Width;
-               
-                two = MakeCanvas(ref canvas, out raidus);
-
-                canvas.Dispose();
-                ///CAMBIE ESTO
-                //   Point middle = GetMiddlePointCanvas(raidus, ref one);
-                //  Point original = new Point(middle.X, middle.Y);
-                Point middle = new Point(tx, ty);
-                Copy(ref middle, ref two, ref one);
-                //get Mat
-                destiny = two.Mat.Clone();
-
+                destiny = performTranslate(ref tx, ref ty, repairFactor, ref two, ref one, ref repairTX, ref repairTY);
 
             }
             catch (Exception ex)
             {
 
-                exception = new SystemException(ex.Message + " at Module#1", ex.InnerException);
+                exception = new SystemException(ex.Message + " at Module#1.2");
             }
 
-
+            two?.Dispose();
             one?.Dispose();
 
 
             try
             {
 
-                if (exception != null) throw new Exception(exception.Message, exception.InnerException);
+                if (exception != null) throw new Exception(exception.Message);
 
                  one = UITwo;
-                 two = two.CopyBlank();
+                 two = canvas.CopyBlank();
                 //make canvas from bigger again
                 // Copy the bigger into the canvas
-                Point middle = GetMiddlePointCanvas(raidus, ref one);
+                Point middle;
+                middle = GetMiddlePointCanvas(raidus, ref one);
                 Copy(ref middle, ref two, ref one);
                 compare = two.Mat.Clone();
 
-                two.Dispose();
+              //  two.Dispose();
 
 
                 resultMat = new Mat();
-
-                CvInvoke.BitwiseXor(compare, destiny, resultMat, null);// Emgu.CV.CvEnum.CmpType.Equal);
-              //  CvInvoke.Subtract(compare, destiny, resultMat);
-                                                                       //  CvInvoke.BitwiseAnd(compare, destiny, resultMat, null);// Emgu.CV.CvEnum.CmpType.Equal);
-
-                // CvInvoke.Compare(compare, destiny, resultMat, Emgu.CV.CvEnum.CmpType.Equal);// Emgu.CV.CvEnum.CmpType.Equal);
-              //    CvInvoke.Pow(resultMat, 2, resultMat);
-
-                two = resultMat.ToImage<Rgba, byte>();
+              CvInvoke.BitwiseXor(compare, destiny, resultMat, null);// Emgu.CV.CvEnum.CmpType.Equal);
+              //  two = resultMat.ToImage<Rgba, byte>();
 
 
-                array[1] = two.CountNonzero();
-                array[2] = two.GetSum();
+               int[] counts = resultMat.ToImage<Rgba, byte>().CountNonzero();
+               List<int> cnt = new List<int>(counts);
+                array[1] = cnt.ToArray();
 
-                 Mat sumaImg = new Mat();
-
+                Mat sumaImg = new Mat();
                  CvInvoke.Add(compare, destiny, sumaImg);//.ass.ToImage<Rgba,byte>().Add(destiny.ToImage<Rgba,byte>()).Mat;
-              
-                //result = resultMat;
                 array[0] = sumaImg;
-        
-
-
 
             }
             catch (Exception ex)
             {
-                string previous = exception?.Message + " +++ ";
-                exception = new SystemException(previous + ex.Message + " at Module#2", ex.InnerException);
+                string previous = string.Empty;
+                if (exception != null)
+                {
+                    previous = exception?.Message + " +++ ";
+                }
+                exception = new SystemException(previous + ex.Message + " at Module#2");
 
             }
 
@@ -258,12 +272,39 @@ namespace PDILib
             compare?.Dispose();
             resultMat?.Dispose();
             two?.Dispose();
-
+            canvas?.Dispose();
 
             array[3] = exception;
+            array[4] = repairTX;
+            array[5] = repairTY;
 
 
             return array;
+        }
+
+        public static Mat performTranslate(ref int tx, ref int ty, double repairFactor, ref Image<Rgba, byte> two, ref Image<Rgba, byte> one,   ref bool repairTX, ref bool repairTY)
+        {
+            int x;
+            while ( (x= (tx + one.Width- two.Width)) >= 0)
+            {
+                //  tx = Convert.ToInt32(tx * (repairFactor));
+                tx = tx - x -1;
+                if (tx < 0) tx = 0;
+                repairTX = true;
+            }
+            int y;
+            while ( (y =(ty + one.Height - two.Height)) >=0)
+            {
+                ty = ty - y-1 ;
+                if (ty < 0) ty = 0;
+                //  ty = Convert.ToInt32(ty * (repairFactor));
+                repairTY = true;
+            }
+
+            Point middle = new Point(tx, ty);
+            Copy(ref middle, ref two, ref one);
+            //get Mat
+            return  two.Mat.Clone();
         }
 
         private void performRotateScale(double angulo, double scalex, double scaley, ref  Image<Rgba, byte> one)

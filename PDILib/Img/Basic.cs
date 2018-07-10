@@ -17,7 +17,8 @@ namespace PDILib
         {
             dir = new Directory(path);
         }
-
+      public   MCvMoments[] TwoMoments;
+        public MCvMoments[] OneMoments;
 
         public void GetBasicInfo()
         {
@@ -37,13 +38,19 @@ namespace PDILib
             UITwo = originalTwo.Resize(w / scale, h / scale, Emgu.CV.CvEnum.Inter.Cubic, true)
                 .SmoothGaussian(1);
 
+            //   TwoMoments= CvInvoke.Moments(UITwo[3], true);
 
-            
             //    SwitchColor(ref UITwo, imgUtil.pitchBlack, imgUtil.pitchWhite);
-              //  SwitchColor(ref UIOne,  imgUtil.pitchBlack, imgUtil.pitchWhite);
+            //  SwitchColor(ref UIOne,  imgUtil.pitchBlack, imgUtil.pitchWhite);
+            OneMoments = new MCvMoments[4];
+            TwoMoments = new MCvMoments[4];
 
-            
+            for (int i = 0; i < 4; i++)
+            {
+                OneMoments[i] = CvInvoke.Moments(UIOne[i], false);
+                TwoMoments[i] = CvInvoke.Moments(UITwo[i], false);
 
+            }
 
 
 
@@ -173,9 +180,13 @@ namespace PDILib
             UIOne = original.Resize(w / scale, h / scale, Emgu.CV.CvEnum.Inter.Cubic, true)
                 .SmoothGaussian(1);
 
+
+         //   OneMoments = CvInvoke.Moments(UIOne[3], true);
+
+
             //BORRAR STO
-           // GetImgToCompare(filename, scale);
-          //  UIOne = imgUtil.expandedOne[0];
+            // GetImgToCompare(filename, scale);
+            //  UIOne = imgUtil.expandedOne[0];
 
             //.Sobel(1,1,13).Convert<Rgba,byte>();
             // SwitchColor(ref escaledUI, 0, imgUtil.pitchWhite, new Rgba(0, 0, 0, 0));

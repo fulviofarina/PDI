@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="PDIGenetic.PDIChromosome">
-    <Position X="4.25" Y="1" Width="1.5" />
+    <Position X="2.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAgAAAgAAIAAABIQAAgAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>Genetic\PDIChromosome.cs</FileName>
@@ -10,15 +10,15 @@
   <Class Name="PDIGenetic.PDIGeneticController" BaseTypeListCollapsed="true">
     <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAIACgAAACBAAAAAAAAAAAAUgAAAAAEAoAAAACAEAA=</HashCode>
+      <HashCode>AFAIACAAQACBAAAAAAAAAAAQUgAAAAAEAoAAIACAEgA=</HashCode>
       <FileName>Genetic\PDIGeneticController.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="PDIGenetic.PDIGeneticUtil">
-    <Position X="7" Y="0.5" Width="1.5" />
+    <Position X="4.75" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ADAYQgAgEAEMAAAAAAAAAAAAAAAFAAAABAAAADAACAo=</HashCode>
+      <HashCode>AjAYQgAgEAEMAAAAAAAAAAAAAAAFAAAABAAAADAACAo=</HashCode>
       <FileName>Genetic\PDIGeneticUtil.cs</FileName>
     </TypeIdentifier>
   </Class>

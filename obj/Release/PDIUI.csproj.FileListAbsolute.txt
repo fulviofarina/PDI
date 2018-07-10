@@ -1,8 +1,3 @@
-D:\Dropbox\My Software\PDI\PDI\bin\Release\concrt140.dll
-D:\Dropbox\My Software\PDI\PDI\bin\Release\cvextern.dll
-D:\Dropbox\My Software\PDI\PDI\bin\Release\msvcp140.dll
-D:\Dropbox\My Software\PDI\PDI\bin\Release\opencv_ffmpeg341.dll
-D:\Dropbox\My Software\PDI\PDI\bin\Release\vcruntime140.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\PDIUI.exe.config
 D:\Dropbox\My Software\PDI\PDI\bin\Release\PDIUI.exe
 D:\Dropbox\My Software\PDI\PDI\bin\Release\PDIUI.pdb
@@ -11,8 +6,12 @@ D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.UI.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.UI.GL.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.World.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\PDILib.dll
+D:\Dropbox\My Software\PDI\PDI\bin\Release\ZedGraph.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\Microsoft.VisualStudio.DebuggerVisualizers.dll
 D:\Dropbox\My Software\PDI\PDI\bin\Release\PDILib.pdb
+D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.UI.xml
+D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.UI.GL.xml
+D:\Dropbox\My Software\PDI\PDI\bin\Release\Emgu.CV.World.xml
 D:\Dropbox\My Software\PDI\PDI\obj\Release\PDIUI.csprojResolveAssemblyReference.cache
 D:\Dropbox\My Software\PDI\PDI\obj\Release\PDIUI.Form1.resources
 D:\Dropbox\My Software\PDI\PDI\obj\Release\PDIUI.Properties.Resources.resources

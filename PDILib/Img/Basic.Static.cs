@@ -120,7 +120,24 @@ namespace PDILib
             source.CopyTo(destiny);
             destiny.ROI = Rectangle.Empty;
         }
+        public static Image<Gray, float> MatchTemplate(ref Image<Rgba, byte> uno, ref Image<Rgba, byte> dos)
+        {
+            //  imagen.UITwo = imagen.UITwo.LogPolar(new PointF(x,y), 50, Emgu.CV.CvEnum.Inter.Cubic, Emgu.CV.CvEnum.Warp.Default);
 
+
+
+            float x = (float)(uno.Width)/1.2f ;
+            float y = (float)(uno.Height)/1.2f ;
+
+            uno.ROI = new Rectangle(0, 0, (int)x, (int)y);
+            Image<Gray, float> gray = dos.MatchTemplate(uno, Emgu.CV.CvEnum.TemplateMatchingType.Ccoeff);
+            uno.ROI = Rectangle.Empty;
+
+
+           // CvInvoke.Imshow("Gary", gray);
+
+            return gray;
+        }
         public static void SwitchColor(ref Image<Rgba,byte> source, Rgba compare, Rgba set)
         {
             for (int x = 0; x < source.Height; x++)

@@ -12,10 +12,12 @@ namespace PDIGenetic
     //    private int numberOfGenes;
         private int size;
         private PDIGeneticUtil config;
-     //   BitArray chromosomeValue;
-        public PDIGeneticUtil Config { get => config; set => config = value; }
+     
 
-        /// <summary>
+
+        //   BitArray chromosomeValue;
+        public PDIGeneticUtil Config { get => config; set => config = value; }
+       /// <summary>
         ///
         /// </summary>
         /// <param name="sizeOfChromosome"></param>
@@ -25,8 +27,8 @@ namespace PDIGenetic
           //  numberOfGenes = numOfGenes; // do I need the values? nope I think, only indexes
             size = sizeOfChromosome;
 
-
-
+           
+          
           
 
 
@@ -52,7 +54,9 @@ namespace PDIGenetic
             return array;
         }
         */
-        List<int> integers = new List<int>();
+         private  List<int> integers = new List<int>();
+
+      
 
 
         public void FillGenes()
@@ -64,12 +68,13 @@ namespace PDIGenetic
             int sy = 0;
             int skX = 0;
             int skY = 0;
-            //  double sx = 0;
-
+         
 
             integers.Clear();
 
              rot = RandomizationProvider.Current.GetInt(config.InitialAngle, config.FinalAngle);
+         
+
             integers.Add(rot);
             if (size > 1)
             {
