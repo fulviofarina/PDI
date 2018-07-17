@@ -192,6 +192,10 @@ namespace PDIUI
 
 
             imagen.GetImg(filename, 5);
+            imagen.GetImgToCompare(filename, 5);
+            imagen.ExpandTwice();
+        //    imagen.UIOne = imagen.imgUtil.expandedOne[0];
+
             originalBox.Image = imagen.UIOne.Bitmap;
             imagen.GetBasicInfo();
             basicInfoBindingSource.DataSource = imagen.BInfo.table;
@@ -551,6 +555,8 @@ namespace PDIUI
             Img.ChangeColor(ref other, rF, gF, bF, AF);
 
 
+            /*
+
             // CvInvoke.CLAHE(other, 1, new Size(10, 10), other);
             double radius = Img.CalculateDiagonalLenght(other.Width, other.Height);
             radius /= 2;
@@ -568,6 +574,8 @@ namespace PDIUI
           //  source.CopyTo(destiny);
          //   other.ROI = Rectangle.Empty;
 
+
+            */
 
 
            // this.segmentBox.Image = pantone.Bitmap;
@@ -626,9 +634,13 @@ namespace PDIUI
         private void segmentBtn_Click(object sender, EventArgs e)
         {
 
+
+         //   imagen.GetImgToCompare(imagen.path+"//"+ imagen.dir,2);
+          //  imagen.ExpandTwice();
+
+        //    imagen.UIOne = imagen.imgUtil.expandedOne[0];
+
             imagen.GetChannels();
-
-
 
             //experimento();
 

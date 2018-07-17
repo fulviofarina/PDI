@@ -1,14 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
   <Class Name="PDIGenetic.PDIChromosome">
-    <Position X="2.75" Y="1.5" Width="1.5" />
+    <Position X="0.75" Y="2" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAACAgAAAgAAIAAABIQAAgAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>Genetic\PDIChromosome.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PDIGenetic.PDIGeneticController" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="1.5" Width="1.5" />
+    <Position X="0.75" Y="5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AFAIACAAQACBAAAAAAAAAAAQUgAAAAAEAoAAIACAEgA=</HashCode>
       <FileName>Genetic\PDIGeneticController.cs</FileName>
@@ -16,7 +23,10 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="PDIGenetic.PDIGeneticUtil">
-    <Position X="4.75" Y="1" Width="1.5" />
+    <Position X="8.75" Y="2.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AjAYQgAgEAEMAAAAAAAAAAAAAAAFAAAABAAAADAACAo=</HashCode>
       <FileName>Genetic\PDIGeneticUtil.cs</FileName>

@@ -52,28 +52,23 @@ namespace PDILib
 
             }
 
+         //   ExpandTwice();
 
+        }
 
-
+        public void ExpandTwice()
+        {
             int j = 0;
             //take originals
             imgUtil.expandedOne[j] = UIOne;
             imgUtil.expandedTwo[j] = UITwo;
-
-
             firstExpansion(j);
-
             j++;
-
             secondExpansion(j);
-
-            SwitchColor(ref imgUtil.expandedTwo[1],  imgUtil.pitchWhite, imgUtil.pitchBlack);
-            SwitchColor(ref imgUtil.expandedTwo[0],imgUtil.pitchWhite, imgUtil.pitchBlack);
-
-
-            SwitchColor(ref imgUtil.expandedOne[1],  imgUtil.pitchWhite, imgUtil.pitchBlack);
-            SwitchColor(ref imgUtil.expandedOne[0],  imgUtil.pitchWhite, imgUtil.pitchBlack);
-
+            SwitchColor(ref imgUtil.expandedTwo[1], imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedTwo[0], imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedOne[1], imgUtil.pitchWhite, imgUtil.pitchBlack);
+            SwitchColor(ref imgUtil.expandedOne[0], imgUtil.pitchWhite, imgUtil.pitchBlack);
         }
 
         private void secondExpansion(int j)

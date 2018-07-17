@@ -41,8 +41,10 @@ namespace PDIGenetic
         private static double fitnessCalculation(ref decimal[] countDecimals, ref double coeff)
         {
             double fitness = 0;
-          
-            for (int i = 0; i < countDecimals.Length; i++)
+          //  countDecimals[3] = (decimal)0.8;
+            int lenght = countDecimals.Length;
+        //    lenght = 3;
+            for (int i = 0; i < lenght; i++)
             {
                 double weight = 1;
             //    if (i == 3) weight =1;

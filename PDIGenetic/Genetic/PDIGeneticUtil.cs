@@ -25,7 +25,7 @@ namespace PDIGenetic
         public void readjustSearchSpace(ref Gene[] genes, double fitness, double comparableFitnes)
         {
             // ..  0.505
-            if (fitness >= 0.505 && comparableFitnes < fitness)
+            if (fitness >= 0.485 && comparableFitnes < fitness)
             {
                 double readjustFactor;
 
@@ -35,23 +35,25 @@ namespace PDIGenetic
                 double a2 = -73.995;
                 double a3 = 23.008;
 
-                if (genes.Count()>=7)
+             //   if (genes.Count()>=7)
                 {
-                    a1 = 68.622;
-                    a2 = -79.693;
+                    a1 = 62.808;
+                    a2 = -76.242;
                 }
 
                 readjustFactor = a1 * fitness * fitness + a2 * fitness + a3;
 
                 if (fitness > 0.567)
+             //       if (fitness > 0.567)
                 {
                     //     readjustFactor = 0.05;
-                    readJustAngleToo = true;
+              //      readJustAngleToo = true;
                 }
                 else if (fitness > 0.563)
+               // else if (fitness > 0.563)
                 {
                     //  readjustFactor = 0.15;
-                    readJustAngleToo = true;
+//readJustAngleToo = true;
                 }
 
 

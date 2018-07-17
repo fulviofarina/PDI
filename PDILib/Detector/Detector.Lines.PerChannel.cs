@@ -14,7 +14,7 @@ namespace PDILib
 
         public void GetDiagonalsPosNegPerChannel(double factor, int channels)
         {
-            LineSegment2D[] diag = GetDiagonals(channels, raw.Height, factor);
+            LineSegment2D[] diag = GetDiagonals(channels, raw.Height, factor, 1.05f,0.95f);
 
             Diagonals[channels, 0] = diag.Where(o => o.Direction.Y / o.Direction.X > 0).ToArray();
             Diagonals[channels, 1] = diag.Where(o => o.Direction.Y / o.Direction.X < 0).ToArray();

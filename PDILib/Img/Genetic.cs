@@ -170,7 +170,8 @@ namespace PDILib
 
 
                 two = UITwo;
-                one = this.imgUtil.expandedOne[0];
+           //    one = this.imgUtil.expandedOne[0];
+                one = UIOne;
 
                 performRotateScale(angulo, scalex, scaley, ref one);
                 performSkew(skX, skY, ref one);
@@ -253,7 +254,7 @@ namespace PDILib
                 array[1] = cnt.ToArray();
 
                 Mat sumaImg = new Mat();
-                 CvInvoke.Add(compare, destiny, sumaImg);//.ass.ToImage<Rgba,byte>().Add(destiny.ToImage<Rgba,byte>()).Mat;
+                 CvInvoke.Subtract(compare, destiny, sumaImg);//.ass.ToImage<Rgba,byte>().Add(destiny.ToImage<Rgba,byte>()).Mat;
                 array[0] = sumaImg;
 
             }

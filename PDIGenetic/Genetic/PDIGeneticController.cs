@@ -14,18 +14,21 @@ namespace PDIGenetic
 {
     public partial class PDIGeneticController : ControllerBase, IController
     {
-      
+
+        public IChromosome specificAdam;
+
+
         public override void SetPreprocess()
         {
 
             util = new PDIGeneticUtil();
-
-
+            specificAdam = null;
+            StagnationCounter = 0;
             if (imagen != null) //imagen = new Img();
             {
                       imagen.Dispose();
             }
-                 imagen = new Img();
+            imagen = new Img();
 
             repairCounter = 0;
 
@@ -111,7 +114,7 @@ namespace PDIGenetic
 
         //  private double lastBest;
         //   private int StagnationCounter = 0;
-        public IChromosome specificAdam;
+    
 
         public override IChromosome GenerateAdamFromStrings(ref string[] genes)
         {
@@ -143,7 +146,7 @@ namespace PDIGenetic
             try
             {
 
-             
+             restart: 
 
                 Gene[] genes = chromosome.GetGenes();
                 object[] fitnessMatrixCounts = FitnessRawEvaluator(r.IsChromosomeNull(),ref chromosome);
@@ -156,46 +159,105 @@ namespace PDIGenetic
                 if (fitnessMatrixCounts[2] != null)
                 {
                     SystemException ex = fitnessMatrixCounts[2] as SystemException;
-                    r.Okays = ex.Message + " - InnerEx - " + ex.InnerException.Message;
+                    r.Okays = ex.Message;
                 }
                 else
                 {
-                    decimal[] counts = fitnessMatrixCounts[3] as decimal[];
-                    if (counts != null)
+                    int rotNew = (int)genes[0].Value;
+                    int rotOld = rotNew;
+                    bool changeGene = false;
+
+
+                    if (this.GARow != null)
                     {
-                        r.Okays = string.Concat(counts.SelectMany(o => Decimal.Round(o, 2).ToString() + ","));
+                        if (!this.GARow.IsFitnessNull())
+                        {
+                            double comparableFitness = this.GARow.Fitness;
+
+                            if (fitness <= comparableFitness)
+                            {
+                                StagnationCounter++;
+                            }
+
+                            else StagnationCounter = 0;
+
+                            if (StagnationCounter > 15)
+                            {
+
+                            }
+                            else if (StagnationCounter > 10)
+                            {
+                                if (rotNew + 180 <= 180) rotNew += 180;
+                                else if (rotNew - 180 >= -180) rotNew -= 180;
+                                changeGene = true;
+                            }
+                            else if (StagnationCounter > 5)
+                            {
+                                if (rotNew + 90 <= 180) rotNew += 90;
+                                else if (rotNew - 90 >= -180) rotNew -= 90;
+                                changeGene = true;
+                            }
+
+                            if (changeGene)
+                            {
+                                chromosome.ReplaceGene(0, new Gene(rotNew));
+                                StagnationCounter = 0;
+                                goto restart;
+
+
+                            }
+
+
+                            decimal[] counts = fitnessMatrixCounts[3] as decimal[];
+                            if (counts != null)
+                            {
+                                r.Okays = string.Concat(counts.SelectMany(o => Decimal.Round(o, 2).ToString() + ","));
+                            }
+
+                            if (repairCounter == 10)
+                            {
+                                //   this.util.MaxTX = Convert.ToInt32(this.util.MaxTX * 0.95);
+                                repairCounter = 0;
+                            }
+                            if (repairCounter == 10)
+                            {
+                                //  this.util.MaxTY = Convert.ToInt32(this.util.MaxTY * 0.95);
+                                repairCounter = 0;
+                            }
+
+                            this.util.readjustSearchSpace(ref genes, fitness, comparableFitness);
+                        }
                     }
+
+                    if (GA.GenerationsNumber == 20 && specificAdam != null)
+                    {
+                        // GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
+                        //
+                        GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
+
+                        // GA.Population.CreateNewGeneration(GA.Population.CurrentGeneration.Chromosomes);
+
+                        //   GA.Crossover.Cross(GA.Population.CurrentGeneration.Chromosomes);
+                        //  GA.BestChromosome.Fitness = specificAdam.Fitness;
+                        //  GA.Population.CurrentGeneration.BestChromosome.ReplaceGenes(0,specificAdam.GetGenes());
+
+                        //
+                        //   GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
+                        //Add(specificAdam);
+                        //    GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
+                        //  chromosome.ReplaceGenes(0, specificAdam.GetGenes());
+                        //     chromosome.Fitness = specificAdam.Fitness;
+                        //   chromosome = specificAdam;
+                    }
+
                 }
                 r.Genotype = Aid.SetStrings(r.GenesAsInts, " | ", 0, "0");
-                double comparableFitness = this.GARow.Fitness;
-               this.util.readjustSearchSpace(ref genes, fitness, comparableFitness);
-
-
-               if (GA.GenerationsNumber == 20)
-               {
-                  // GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
-                    //
-                   GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
-
-                   // GA.Population.CreateNewGeneration(GA.Population.CurrentGeneration.Chromosomes);
-                    
-                    //   GA.Crossover.Cross(GA.Population.CurrentGeneration.Chromosomes);
-                  //  GA.BestChromosome.Fitness = specificAdam.Fitness;
-                  //  GA.Population.CurrentGeneration.BestChromosome.ReplaceGenes(0,specificAdam.GetGenes());
-
-                    //
-                    //   GA.Population.CurrentGeneration.Chromosomes.RemoveAt(GA.Population.CurrentGeneration.Chromosomes.Count() - 1);
-                    //Add(specificAdam);
-                    //    GA.Population.CurrentGeneration.Chromosomes.Add(specificAdam);
-                    //  chromosome.ReplaceGenes(0, specificAdam.GetGenes());
-                    //     chromosome.Fitness = specificAdam.Fitness;
-                    //   chromosome = specificAdam;
-                }
+            
 
             }
             catch (Exception ex)
             {
-                r.Okays = ex.Message + " - InnerEx - ";// + ex.InnerException?.Message;
+                r.Okays = ex.Message;// + ex.InnerException?.Message;
 
             }
 
@@ -212,7 +274,9 @@ namespace PDIGenetic
 
         private int repairCounter = 0;
 
-        public override object[] FitnessRawEvaluator(bool isImgNull, ref IChromosome chromosome)
+        public int StagnationCounter { get; private set; }
+
+        public override object[] FitnessRawEvaluator(bool someFlag, ref IChromosome chromosome)
         {
 
              Gene[] genesArray = chromosome?.GetGenes();
@@ -328,23 +392,16 @@ namespace PDIGenetic
                 if (repairTx)
                 {
                     chromosome.ReplaceGene(1, new Gene(tx));
+
                     repairCounter++;
-                    if (repairCounter == 5)
-                    {
-                      //  this.util.MaxTX = Convert.ToInt32(this.util.MaxTX * repairFactor);
-                        repairCounter = 0;
-                    }
+              
                 }
 
                 if (repairTy)
                 {
                     chromosome.ReplaceGene(2, new Gene(ty));
                     repairCounter++;
-                    if (repairCounter == 5)
-                    {
-                       // this.util.MaxTY = Convert.ToInt32(this.util.MaxTY * repairFactor);
-                        repairCounter = 0;
-                    }
+          
                 }
 
                 counts = (aux[1] as int[]);
@@ -358,7 +415,7 @@ namespace PDIGenetic
                 if (matriz != null)
                 {
                     double? lastBest = GA.BestChromosome?.Fitness;
-                    keepMatrix(isImgNull, fitness, lastBest, ref matriz);
+                    keepMatrix(someFlag, fitness, lastBest, ref matriz);
                 }
                 result[2] = aux[3]; //exception
                 result[3] = countsAsDeciamals;
